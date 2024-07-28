@@ -22,6 +22,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "clerkFrontendApi": "pk_test_ZG9taW5hbnQtYW50ZWF0ZXItNzkuY2xlcmsuYWNjb3VudHMuZGV2JA"
+    },
+    "scheme": "cleanigservice"
   }
 }
