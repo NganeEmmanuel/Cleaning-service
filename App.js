@@ -7,6 +7,33 @@ import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-expo';
 import Constants from 'expo-constants';
 import Login from './App/Screen/LoginScreen/Login';
 import Home from './App/Screen/HomeScreen/Home';
+import * as SecureStore from 'expo-secure-store'
+
+//save login token to cache to enable auto login when
+const tokenCache = {
+  async getToken(key) {
+    try {
+      const item = await SecureStore.getItemAsync(key)
+      if (item) {
+        console.log(`${key} was used 🔐 \n`)
+      } else {
+        console.log('No values stored under key: ' + key)
+      }
+      return item
+    } catch (error) {
+      console.error('SecureStore get item error: ', error)
+      await SecureStore.deleteItemAsync(key)
+      return null
+    }
+  },
+  async saveToken(key, value) {
+    try {
+      return SecureStore.setItemAsync(key, value)
+    } catch (err) {
+      return
+    }
+  },
+}
 
 const getClerkFrontendApi = () => {
   if (Constants.expoConfig && Constants.expoConfig.extra) {
@@ -20,6 +47,7 @@ const getClerkFrontendApi = () => {
 };
 
 const clerkFrontendApi = getClerkFrontendApi();
+console.log('Clerk Frontend API:', clerkFrontendApi);
 
 const Stack = createNativeStackNavigator();
 
@@ -33,7 +61,9 @@ export default function App() {
   }
 
   return (
-    <ClerkProvider publishableKey={clerkFrontendApi}>
+    <ClerkProvider 
+    tokenCache={tokenCache}
+    publishableKey={clerkFrontendApi}>
       <NavigationContainer>
         <SignedIn>
           <Stack.Navigator>
