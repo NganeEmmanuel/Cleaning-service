@@ -8,6 +8,7 @@ import Constants from 'expo-constants';
 import Login from './App/Screen/LoginScreen/Login';
 import Home from './App/Screen/HomeScreen/Home';
 import * as SecureStore from 'expo-secure-store'
+import TabNavigation from './App/Navigations/TabNavigation';
 
 //save login token to cache to enable auto login when
 const tokenCache = {
@@ -66,9 +67,7 @@ export default function App() {
     publishableKey={clerkFrontendApi}>
       <NavigationContainer>
         <SignedIn>
-          <Stack.Navigator>
-            <Stack.Screen name="Home" component={Home} />
-          </Stack.Navigator>
+          <TabNavigation />
         </SignedIn>
         <SignedOut>
           <Stack.Navigator>
