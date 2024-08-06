@@ -1,0 +1,73 @@
+import { View, Text, Image, StyleSheet, TextInput} from 'react-native'
+import React from 'react'
+import { useUser } from '@clerk/clerk-expo'
+import Colors from '../../Utils/Colors';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
+export default function Header() {
+    const {user, isLoading} = useUser(); // fetch data from server
+  return user&&(
+    <View style={styles.container}>
+        {/* profile section */}
+        <View style={styles.headerContainer}>
+            <View style={styles.profileContainer}>
+                <Image source={{uri:user?.imageUrl}} style={styles.headerUserImage} />
+                <View>
+                    <Text style={styles.headerWelcomeText}>Welcome</Text>
+                    <Text style={styles.headerUsername}>{user?.fullName}</Text>
+                </View>
+            </View>
+            <FontAwesome name="bookmark-o" size={27} color={Colors.WHITE} />
+        </View>
+
+        {/* search bar section */}
+        <View>
+            <TextInput placeholder="Search for services ..." style={styles.searchbarTextInput} />
+        </View>
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        paddingTop: 40,
+        backgroundColor: Colors.PRIMARY,
+        borderBottomRightRadius: 25,
+        borderBottomLeftRadius: 25
+    },
+
+    headerContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+
+    profileContainer:{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10
+    },
+
+    headerUserImage: {
+        width: 45,
+        height: 45,
+        borderRadius: 99,
+    },
+
+    headerWelcomeText:{
+        color: Colors.WHITE,
+        
+    },
+
+    headerUsername:{
+        color: Colors.WHITE,
+        fontSize: 20
+    },
+
+    searchbarTextInput: {
+        
+    }
+})
