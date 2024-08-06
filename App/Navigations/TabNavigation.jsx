@@ -11,10 +11,11 @@ const Tab = createBottomTabNavigator();
 export default function TabNavigation() {
   return (
     <Tab.Navigator screenOptions={{
-        tabBarActiveTintColor: Colors.PRIMARY
+        tabBarActiveTintColor: Colors.PRIMARY,
+        initialRouteName:"Home",
+        headerShown: false
     }}>
         <Tab.Screen name='Home' component={Home} options={{
-            headerShown: false,
             tabBarLabel: ({color}) =>(
                 <Text style={{color:color, fontSize:12, marginTop: -7 }}>Home</Text>
             ),
@@ -24,7 +25,6 @@ export default function TabNavigation() {
         }}
         />
         <Tab.Screen name='Booking' component={BookingScreen} options={{
-            headerShown: false,
             tabBarLabel: ({color}) =>(
                 <Text style={{color:color, fontSize:12, marginTop: -7 }}>Bookings</Text>
             ),
@@ -33,7 +33,6 @@ export default function TabNavigation() {
             )
         }}/>
         <Tab.Screen name='Profile' component={ProfileScreen} options={{
-            headerShown: false,
             tabBarLabel: ({color}) =>(
                 <Text style={{color:color, fontSize:12, marginTop: -7 }}>Profile</Text>
             ),
