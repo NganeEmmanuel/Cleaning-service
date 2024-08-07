@@ -60,12 +60,14 @@ const styles = StyleSheet.create({
 
     headerWelcomeText:{
         color: Colors.WHITE,
+        fontFamily: 'outfit'
         
     },
 
     headerUsername:{
         color: Colors.WHITE,
-        fontSize: 20
+        fontSize: 20,
+        fontFamily: 'outfit-medium'
     },
 
     searchBarContainer: {
@@ -83,7 +85,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.WHITE,
         borderRadius: 8,
         width: '85%',
-        fontSize: 16
+        fontSize: 16,
+        fontFamily: 'outfit'
     },
     
     searchBarButton: {

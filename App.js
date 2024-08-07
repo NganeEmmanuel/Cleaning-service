@@ -6,9 +6,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-expo';
 import Constants from 'expo-constants';
 import Login from './App/Screen/LoginScreen/Login';
-import Home from './App/Screen/HomeScreen/Home';
 import * as SecureStore from 'expo-secure-store'
 import TabNavigation from './App/Navigations/TabNavigation';
+import { useFonts } from 'expo-font';
 
 //save login token to cache to enable auto login when
 const tokenCache = {
@@ -53,6 +53,13 @@ console.log('Clerk Frontend API:', clerkFrontendApi);
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  // add font loading to use in the app
+  const [loaded, error] = useFonts({
+    'outfit': require('./assets/fonts/Outfit-Regular.ttf'),
+    'outfit-medium': require('./assets/fonts/Outfit-Medium.ttf'),
+    'outfit-bold': require('./assets/fonts/Outfit-Bold.ttf'),
+  });
+
   if (!clerkFrontendApi) {
     return (
       <View style={styles.container}>
