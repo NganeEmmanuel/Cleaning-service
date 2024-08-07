@@ -1,6 +1,6 @@
 // App/Screen/HomeScreen.jsx
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Header from './Header';
 import Slider from './Slider';
 
@@ -10,8 +10,16 @@ export default function Home() {
       {/* header section */}
       <Header />
 
-      {/* slider sectioin */}
-      <Slider />
+      <View style={styles.homeViewContainer}>
+        {/* slider sectioin */}
+        <Slider />
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  homeViewContainer: {
+    padding: 20
+  }
+})
