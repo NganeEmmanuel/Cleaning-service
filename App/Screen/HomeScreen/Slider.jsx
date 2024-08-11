@@ -1,19 +1,16 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import GlobalApi from '../../Utils/GlobalApi';
-import { FlatList } from 'react-native-gesture-handler';
 import Heading from '../../Common/Heading';
 
 export default function Slider() {
     const [slider, setSlider] = useState([]);
-    
     useEffect(() => {
         getSliders();
     }, []);
     
     const getSliders = () => {
         GlobalApi.getSlider().then(resp => {
-            console.log("resp: ", resp.sliders);
             setSlider(resp?.sliders);
         });
     };

@@ -2,7 +2,6 @@ import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-expo';
 import Constants from 'expo-constants';
@@ -70,7 +69,6 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView>
       <ClerkProvider 
       tokenCache={tokenCache}
       publishableKey={clerkFrontendApi}>
@@ -86,7 +84,6 @@ export default function App() {
         </NavigationContainer>
         <StatusBar style="auto" />
       </ClerkProvider>
-    </GestureHandlerRootView>
   );
 }
 
