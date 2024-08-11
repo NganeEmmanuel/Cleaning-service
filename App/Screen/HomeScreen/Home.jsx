@@ -3,6 +3,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Header from './Header';
 import Slider from './Slider';
+import Categories from './Categories';
 
 export default function Home() {
   return (
@@ -13,6 +14,9 @@ export default function Home() {
       <View style={styles.homeViewContainer}>
         {/* slider sectioin */}
         <Slider />
+
+        {/* Category section */}
+        <Categories />
       </View>
     </View>
   );

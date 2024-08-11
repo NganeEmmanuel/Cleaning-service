@@ -28,7 +28,7 @@ const getSlider = async () => {
     }
     `;
 
-    console.log('Hygraph Token:', HYGRAPH_TOKEN);
+    console.log('Hygraph Token:', HYGRAPH_TOKEN);  //todo remove befor build
 
     try {
         const response = await fetch(MASTER_URL, {
@@ -47,11 +47,50 @@ const getSlider = async () => {
         const result = await response.json();
         return result.data;
     } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching sliders data:', error);
+        throw error;
+    }
+};
+
+//api call for getting categories
+const getCategories = async () => {
+    const query = gql`
+    query GetCategory {
+        categories {
+            id
+            name
+            icon {
+                url
+            }
+        }
+    }
+    `;
+
+    console.log('Hygraph Token:', HYGRAPH_TOKEN); //todo remove befor build
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error('Error fetching category data:', error);
         throw error;
     }
 };
 
 export default {
-    getSlider
+    getSlider,
+    getCategories
 };
