@@ -41,7 +41,8 @@ export default function ServiceList() {
 
 const styles = StyleSheet.create({
   serviceContainer: {
-    marginTop: 20
+    marginTop: 20,
+    marginBottom: 40
   },
 
   serviceListContainer: {
