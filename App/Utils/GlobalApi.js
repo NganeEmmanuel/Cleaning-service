@@ -90,7 +90,53 @@ const getCategories = async () => {
     }
 };
 
+// Get list of service api call
+const getServiceList = async () => {
+    const query = gql`
+    query GetServiceList {
+        serviceLists {
+            id
+            name
+            email
+            contactPerson
+            address
+            about
+            category {
+                name
+            }
+            images {
+                url
+            }
+        }
+    }
+    `;
+
+    console.log('Hygraph Token:', HYGRAPH_TOKEN); //todo remove befor build
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error('Error fetching service list data:', error);
+        throw error;
+    }
+};
+
 export default {
     getSlider,
-    getCategories
+    getCategories,
+    getServiceList
 };

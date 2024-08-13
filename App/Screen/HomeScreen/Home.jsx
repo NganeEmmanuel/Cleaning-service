@@ -4,6 +4,7 @@ import { View, StyleSheet } from 'react-native';
 import Header from './Header';
 import Slider from './Slider';
 import Categories from './Categories';
+import ServiceList from './ServiceList';
 
 export default function Home() {
   return (
@@ -17,6 +18,9 @@ export default function Home() {
 
         {/* Category section */}
         <Categories />
+
+        {/* ServiceList section  */}
+        <ServiceList />
       </View>
     </View>
   );
