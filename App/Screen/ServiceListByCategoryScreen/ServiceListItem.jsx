@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
 
   serviceName:{
     fontFamily: 'outfit-bold',
-    fontSize: 20
+    fontSize: 18
   },
 
   serviceContactPerson: {

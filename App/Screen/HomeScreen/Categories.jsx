@@ -1,60 +1,67 @@
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import GlobalApi from '../../Utils/GlobalApi'
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import GlobalApi from '../../Utils/GlobalApi';
 import Heading from '../../Common/Heading';
 import Colors from '../../Utils/Colors';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Categories() {
     const [categories, setCategories] = useState([]);
-    const [allCategories, setAllCategories] = useState(3)
+    const [allCategories, setAllCategories] = useState(3);
+    const [isViewAll, setIsViewAll] = useState(false);
 
-    //initialize navigation for tracking and handling navigation to other screens from homescreen
-    const navigation = useNavigation() 
+    const navigation = useNavigation();
 
-    // toggle view all on categories  todo, finish the view all implementation on categories
+    // Toggle view all on categories
     const viewAllCategories = () => {
-        setAllCategories(12)
-    }
+        if (isViewAll) {
+            setAllCategories(3);
+            setIsViewAll(false);
+        } else {
+            setAllCategories(12);
+            setIsViewAll(true);
+        }
+    };
 
     useEffect(() => {
-      getCategories();
+        getCategories();
     }, []);
 
-    /**
-     * Get Category list function
-     * Returns all the list of categories in the database(id, name, icons)
-     */
-    const getCategories=()=>{
-        GlobalApi.getCategories().then(resp=>{
-            setCategories(resp?.categories)
+    const getCategories = () => {
+        GlobalApi.getCategories().then(resp => {
+            setCategories(resp?.categories);
         });
     };
-  return (
-    <View style={styles.categoriesContainer}>
-      <Heading text={'Categories'} isViewAll={true} />
-      {/* <Text>{console.log(categories[0].icon.url)}</Text> */}
-      <FlatList 
-        data={categories}
-        numColumns={4}
-        renderItem={({item, index }) => index <= allCategories && (
-            <TouchableOpacity
-              onPress={() =>navigation.push('service-list',{
-                category:item.name
-              })}
 
-              style={styles.mainIconContainer}
-            >
-                <View style={styles.iconContainer}>
-                    <Image source={{uri:item?.icon?.url}} style={styles.icons}/>
-                </View>
-                <Text style={styles.categoryName}>{item.name}</Text>
-            </TouchableOpacity>
-        )}
-      />
-    </View>
-  );
+    return (
+        <View style={styles.categoriesContainer}>
+            <Heading 
+                text={'Categories'} 
+                isViewAll={true} 
+                onPress={viewAllCategories} 
+                isViewAllText={isViewAll ? 'View Less' : 'View All'}
+            />
+            <FlatList 
+                data={categories}
+                numColumns={4}
+                renderItem={({ item, index }) => index <= allCategories && (
+                    <TouchableOpacity
+                        onPress={() => navigation.push('service-list', {
+                            category: item.name
+                        })}
+                        style={styles.mainIconContainer}
+                    >
+                        <View style={styles.iconContainer}>
+                            <Image source={{ uri: item?.icon?.url }} style={styles.icons} />
+                        </View>
+                        <Text style={styles.categoryName}>{item.name}</Text>
+                    </TouchableOpacity>
+                )}
+            />
+        </View>
+    );
 }
+
 
 const styles = StyleSheet.create({
   categoriesContainer: {
