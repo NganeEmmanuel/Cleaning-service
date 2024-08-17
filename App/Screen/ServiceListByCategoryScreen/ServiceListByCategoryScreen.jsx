@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React, {useEffect} from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import Ionicons from '@expo/vector-icons/Ionicons';
+import GlobalApi from '../../Utils/GlobalApi';
 
 export default function ServiceListByCategoryScreen() {
   //fetch category being sent
@@ -10,8 +11,16 @@ export default function ServiceListByCategoryScreen() {
   //defind navigation
   const navigation =useNavigation()
   useEffect(() =>{
-    console.log("Category:", param.category)
-  }, [])
+    param&&getServiceListByCategory()
+  }, [param])
+
+  //fetch the service list for the category
+  const getServiceListByCategory = () =>{
+    GlobalApi.getServiceListByCategory(param.category).then(resp => {
+      console.log(resp)
+    })
+  }
+  
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.navContainer} onPress={()=> navigation.goBack()}>
