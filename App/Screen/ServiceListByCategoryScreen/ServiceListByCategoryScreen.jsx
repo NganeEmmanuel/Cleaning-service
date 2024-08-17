@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React, {useEffect} from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
+import React, {useEffect, useState} from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import GlobalApi from '../../Utils/GlobalApi';
+import ServiceListItem from './ServiceListItem';
+import Colors from '../../Utils/Colors';
 
 export default function ServiceListByCategoryScreen() {
   //fetch category being sent
@@ -10,23 +12,46 @@ export default function ServiceListByCategoryScreen() {
 
   //defind navigation
   const navigation =useNavigation()
+
+  const [serviceList, setServiceList] = useState([])
+
   useEffect(() =>{
     param&&getServiceListByCategory()
   }, [param])
 
-  //fetch the service list for the category
+  /** 
+   * fetch the service list for the category
+   */
   const getServiceListByCategory = () =>{
     GlobalApi.getServiceListByCategory(param.category).then(resp => {
-      console.log(resp)
+      setServiceList(resp.serviceLists)
     })
   }
-  
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.navContainer} onPress={()=> navigation.goBack()}>
         <Ionicons name="arrow-back-outline" size={30} color="black" />
         <Text style={styles.navCategoryName}>{param.category}</Text>
       </TouchableOpacity>
+
+      {serviceList?.length > 0? <FlatList 
+      data={serviceList}
+      style={{marginTop:15}}
+      renderItem={({item, index}) => (
+        <ServiceListItem service={item} />
+      )}
+      />: 
+        <Text style={
+          {
+            fontFamily: 'outfit', 
+            fontSize: 20, 
+            color: Colors.GREY, 
+            textAlign: 'center',
+            marginTop: '50%'
+          }
+        }>No Service found</Text>
+      }
     </View>
   )
 }
