@@ -66,8 +66,6 @@ const getCategories = async () => {
     }
     `;
 
-    console.log('Hygraph Token:', HYGRAPH_TOKEN); //todo remove befor build
-
     try {
         const response = await fetch(MASTER_URL, {
             method: 'POST',
@@ -111,8 +109,6 @@ const getServiceList = async () => {
     }
     `;
 
-    console.log('Hygraph Token:', HYGRAPH_TOKEN); //todo remove befor build
-
     try {
         const response = await fetch(MASTER_URL, {
             method: 'POST',
@@ -135,8 +131,51 @@ const getServiceList = async () => {
     }
 };
 
+// Get list of service api call
+const getServiceListByCategory = async (category) => {
+    const query = gql`
+    query GetServiceList {
+        serviceLists(where: {category: {name: "`+category+`"}}) {
+            id
+            name
+            about
+            address
+            contactPerson
+            category {
+                name
+            }
+            images {
+                url
+            }
+        }
+    }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error(`Error fetching service list data by category (${category}):`, error);
+        throw error;
+    }
+};
+
 export default {
     getSlider,
     getCategories,
-    getServiceList
+    getServiceList,
+    getServiceListByCategory
 };

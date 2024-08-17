@@ -1,12 +1,16 @@
-import { View, Text, StyleSheet, Image, FlatList } from 'react-native'
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import GlobalApi from '../../Utils/GlobalApi'
 import Heading from '../../Common/Heading';
 import Colors from '../../Utils/Colors';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Categories() {
     const [categories, setCategories] = useState([]);
     const [allCategories, setAllCategories] = useState(3)
+
+    //initialize navigation for tracking and handling navigation to other screens from homescreen
+    const navigation = useNavigation() 
 
     // toggle view all on categories  todo, finish the view all implementation on categories
     const viewAllCategories = () => {
@@ -34,12 +38,18 @@ export default function Categories() {
         data={categories}
         numColumns={4}
         renderItem={({item, index }) => index <= allCategories && (
-            <View style={styles.mainIconContainer}>
+            <TouchableOpacity
+              onPress={() =>navigation.push('service-list',{
+                category:item.name
+              })}
+
+              style={styles.mainIconContainer}
+            >
                 <View style={styles.iconContainer}>
                     <Image source={{uri:item?.icon?.url}} style={styles.icons}/>
                 </View>
                 <Text style={styles.categoryName}>{item.name}</Text>
-            </View>
+            </TouchableOpacity>
         )}
       />
     </View>
