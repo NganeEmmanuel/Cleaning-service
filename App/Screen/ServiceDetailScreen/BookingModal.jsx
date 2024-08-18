@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import BackNavigation from '../../Common/BackNavigation'
 import CalendarPicker from "react-native-calendar-picker";
@@ -9,6 +9,7 @@ export default function BookingModal({hideModal}) {
     const [timeList, setTimeList] = useState([])
     const [selectedTime, setSelectedTime] = useState()
     const [selectedDate, setSelectedDate] = useState()
+    const [notes, setNotes] = useState()
     useEffect(() => {
         getTime()
     }, [])
@@ -40,47 +41,65 @@ export default function BookingModal({hideModal}) {
     }
 
   return (
-    <View style={styles.container}>
-        {/* back navigation section  */}
-        <BackNavigation 
-        handle={false} 
-        title={'Book Service'} 
-        onclick={() => hideModal()} 
-        />
-        
-        {/* Calendar picker section  */}
-        <View style={{marginTop: 20}}>
-            <Heading text={'Select Date'}/>
-            <View style={styles.calenderContainer} >
-                <CalendarPicker
-                onDateChange={setSelectedDate}
-                width={340}
-                minDate={Date.now()}
-                todayBackgroundColor={Colors.BLACK}
-                todayTextStyle={{color:Colors.WHITE}}
-                selectedDayColor={Colors.PRIMARY}
-                selectedDayTextColor={Colors.WHITE}
+    <ScrollView>
+        <KeyboardAvoidingView style={styles.container}>
+            {/* back navigation section  */}
+            <BackNavigation 
+            handle={false} 
+            title={'Book Service'} 
+            onclick={() => hideModal()} 
+            />
+            
+            {/* Calendar picker section  */}
+            <View style={{marginTop: 20}}>
+                <Heading text={'Select Date'}/>
+                <View style={styles.calenderContainer} >
+                    <CalendarPicker
+                    onDateChange={setSelectedDate}
+                    width={340}
+                    minDate={Date.now()}
+                    todayBackgroundColor={Colors.BLACK}
+                    todayTextStyle={{color:Colors.WHITE}}
+                    selectedDayColor={Colors.PRIMARY}
+                    selectedDayTextColor={Colors.WHITE}
+                    />
+                </View>
+            </View>
+
+            {/* Select time Section  */}
+            <View style={{marginTop: 20}}>
+                <Heading text={'Select Time'} />
+                <FlatList  
+                    data={timeList}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({item, index}) => (
+                        <TouchableOpacity style={{marginRight: 10}} 
+                        onPress={() => setSelectedTime(item.time)}>
+                            <Text style={[selectedTime == item.time?
+                            styles.selectedTime: styles.unselectedTime]}>{item.time}</Text>
+                        </TouchableOpacity>
+                    )}
                 />
             </View>
-        </View>
 
-        {/* Select time Section  */}
-        <View style={{marginTop: 20}}>
-            <Heading text={'Select Time'} />
-            <FlatList  
-                data={timeList}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                renderItem={({item, index}) => (
-                    <TouchableOpacity style={{marginRight: 10}} 
-                    onPress={() => setSelectedTime(item.time)}>
-                        <Text style={[selectedTime == item.time?
-                        styles.selectedTime: styles.unselectedTime]}>{item.time}</Text>
-                    </TouchableOpacity>
-                )}
-            />
-        </View>
-    </View>
+            {/* Additional note section  */}
+            <View style={{marginTop:20}}>
+                <Heading text={'Add Notes'} />
+                <TextInput placeholder='add note ...' 
+                style={styles.noteTetxtArea} 
+                numberOfLines={6}
+                multiline={true}
+                onChange={(text) => setNotes(text)}
+                />
+            </View>
+
+            {/* Confirmation Button section  */}
+            <TouchableOpacity style={{marginTop: 20}}>
+                <Text style={styles.confirmBtn}>Confirm & Book</Text>
+            </TouchableOpacity>
+        </KeyboardAvoidingView>
+    </ScrollView>
   )
 }
 
@@ -113,5 +132,27 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     paddingHorizontal: 18,
     color: Colors.PRIMARY,
+  },
+
+  noteTetxtArea: {
+    borderWidth: 1,
+    borderRadius: 15,
+    textAlignVertical: 'top',
+    padding: 20,
+    fontSize: 15,
+    fontFamily: 'outfit-medium',
+    borderColor: Colors.PRIMARY
+  },
+
+  confirmBtn: {
+    textAlign: 'center',
+    fontFamily: 'outfit-medium',
+    fontSize: 17,
+    backgroundColor: Colors.PRIMARY,
+    color: Colors.WHITE,
+    padding: 13,
+    borderRadius: 99,
+    elevation: 2
+
   }
 })
