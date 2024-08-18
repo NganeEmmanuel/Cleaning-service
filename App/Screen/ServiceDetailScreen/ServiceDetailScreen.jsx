@@ -25,42 +25,54 @@ export default function ServiceDetailScreen() {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.navContainer} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back-outline" size={30} color="black" />
-            </TouchableOpacity>
+            <View style={{height: '99.5%'}}>
+                <TouchableOpacity style={styles.navContainer} onPress={() => navigation.goBack()}>
+                    <Ionicons name="arrow-back-outline" size={30} color="black" />
+                </TouchableOpacity>
 
-            {/* Main image */}
-            <Animated.Image source={{ uri: service?.images[0]?.url }} style={[styles.serviceImage, { height: imageHeight }]} />
+                {/* Main image */}
+                <Animated.Image source={{ uri: service?.images[0]?.url }} style={[styles.serviceImage, { height: imageHeight }]} />
 
-            {/* Basic information section */}
-            <Animated.ScrollView 
-                contentContainerStyle={styles.infoContainer}
-                onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                    { useNativeDriver: false }
-                )}
-                scrollEventThrottle={16}
-            >
-                <Text style={styles.Servicename}>{service?.name}</Text>
-                <View style={styles.catProviderContainer}>
-                    <Text style={styles.serviceProvider}>{service?.contactPerson} 🌟</Text>
-                    <Text style={styles.ServiceCategory}>{service?.category.name}</Text>
+                {/* Basic information section */}
+                <Animated.ScrollView 
+                    contentContainerStyle={styles.infoContainer}
+                    onScroll={Animated.event(
+                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                        { useNativeDriver: false }
+                    )}
+                    scrollEventThrottle={16}
+                >
+                    <Text style={styles.Servicename}>{service?.name}</Text>
+                    <View style={styles.catProviderContainer}>
+                        <Text style={styles.serviceProvider}>{service?.contactPerson} 🌟</Text>
+                        <Text style={styles.ServiceCategory}>{service?.category.name}</Text>
+                    </View>
+                    <Text style={styles.serviceAddress}>
+                        <Ionicons name="location-sharp" size={20} color={Colors.PRIMARY} />
+                        {service?.address}
+                    </Text>
+
+                    {/* Horizontal Line */}
+                    <View style={{ borderWidth: 0.2, color: Colors.GREY, marginTop: 30, marginBottom: 20 }}></View>
+
+                    <ServiceAbout service={service} />
+
+                    {/* Horizontal Line */}
+                    <View style={{ borderWidth: 0.2, color: Colors.GREY, marginTop: 30, marginBottom: 20 }}></View>
+
+                    <ServiceImages service={service} />
+                </Animated.ScrollView>
+
+                {/* buttons sections */}
+                <View style={styles.btnContainer}>
+                    <TouchableOpacity style={styles.messageBtn}>
+                        <Text style={styles.messageBtnText}>Message</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.bookinBtn}>
+                        <Text style={styles.bookingBtnText}>Book Now</Text>
+                    </TouchableOpacity>
                 </View>
-                <Text style={styles.serviceAddress}>
-                    <Ionicons name="location-sharp" size={20} color={Colors.PRIMARY} />
-                    {service?.address}
-                </Text>
-
-                {/* Horizontal Line */}
-                <View style={{ borderWidth: 0.2, color: Colors.GREY, marginTop: 30, marginBottom: 20 }}></View>
-
-                <ServiceAbout service={service} />
-
-                {/* Horizontal Line */}
-                <View style={{ borderWidth: 0.2, color: Colors.GREY, marginTop: 30, marginBottom: 20 }}></View>
-
-                <ServiceImages service={service} />
-            </Animated.ScrollView>
+            </View>
         </View>
     );
 }
@@ -120,5 +132,47 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'outfit',
         color: Colors.GREY
+    },
+
+    btnContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        margin: 8,
+        marginBottom: 2,
+        gap: 10,
+    },
+
+    messageBtn: {
+        padding: 15,
+        backgroundColor: Colors.WHITE,
+        borderWidth: 1,
+        borderColor:Colors.PRIMARY,
+        borderRadius: 99,
+        flex: 1
+    },
+
+    messageBtnText: {
+        textAlign: 'center',
+        fontFamily: 'outfit-medium',
+        color: Colors.PRIMARY,
+        fontSize: 18
+    },
+
+    bookinBtn: {
+        padding: 15,
+        backgroundColor: Colors.PRIMARY,
+        borderWidth: 1,
+        borderColor:Colors.WHITE,
+        borderRadius: 99,
+        flex: 1
+    },
+
+    bookingBtnText: {
+        textAlign: 'center',
+        fontFamily: 'outfit-medium',
+        color: Colors.WHITE,
+        fontSize: 18
     }
+
 });
