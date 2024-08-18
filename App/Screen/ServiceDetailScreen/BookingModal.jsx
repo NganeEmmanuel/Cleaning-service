@@ -8,6 +8,7 @@ import Heading from '../../Common/Heading';
 export default function BookingModal({hideModal}) {
     const [timeList, setTimeList] = useState([])
     const [selectedTime, setSelectedTime] = useState()
+    const [selectedDate, setSelectedDate] = useState()
     useEffect(() => {
         getTime()
     }, [])
@@ -52,7 +53,7 @@ export default function BookingModal({hideModal}) {
             <Heading text={'Select Date'}/>
             <View style={styles.calenderContainer} >
                 <CalendarPicker
-                onDateChange={this.onDateChange} 
+                onDateChange={setSelectedDate}
                 width={340}
                 minDate={Date.now()}
                 todayBackgroundColor={Colors.BLACK}
