@@ -8,6 +8,7 @@ export default function ServiceImages({service}) {
       <Heading text={'Photos'} />
       <FlatList 
       data={service?.images}
+      nestedScrollEnabled={true}
       numColumns={2}
       renderItem={({item, index}) => (
         <Image source={{uri:item?.url}} style={styles.moreImages}  />

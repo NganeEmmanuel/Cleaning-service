@@ -15,6 +15,7 @@ export default function ServiceDetailScreen() {
     const scrollY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
+        console.log(param?.service)
         param && setService(param?.service);
     }, [param]);
 
@@ -70,14 +71,14 @@ export default function ServiceDetailScreen() {
                     <TouchableOpacity style={styles.messageBtn}>
                         <Text style={styles.messageBtnText}>Message</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.bookinBtn} onPress={() => setShowModal(true)}>
+                    <TouchableOpacity style={styles.bookinBtn} onPress={() => setShowModal(true)} >
                         <Text style={styles.bookingBtnText}>Book Now</Text>
                     </TouchableOpacity>
                 </View>
 
                 {/* Modal section for booking */}
                 <Modal animationType='slide' visible={showModal}>
-                    <BookingModal  hideModal={()=>setShowModal(false)}/>
+                    <BookingModal  hideModal={()=>setShowModal(false)} serviceID={service?.id}/>
                 </Modal>
             </View>
         </View>

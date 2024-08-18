@@ -164,10 +164,56 @@ const getServiceListByCategory = async (category) => {
         }
         
         const result = await response.json();
-        console.log(result.data);
         return result.data;
     } catch (error) {
         console.error(`Error fetching service list data by category (${category}):`, error);
+        throw error;
+    }
+};
+
+// Get list of service api call
+const createBooking = async (data) => {    
+    const query = gql`
+        mutation CreateBooking {
+            createBooking(
+                data: {
+                    userName: "${data.username}",
+                    userEmail: "${data.userEmail}",
+                    bookingStatus: booked,
+                    service: {connect: {id: "${data.serviceID}"}},
+                    date: "${data.date}",
+                    time: "${data.time}",
+                    notes: "${data.notes}"
+                }
+            ) {
+                id
+            }
+            publishManyBookingsConnection {
+                aggregate {
+                count
+                }
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error(`Error creating the booking for this data: (${data}):`, error);
         throw error;
     }
 };
@@ -177,5 +223,6 @@ export default {
     getSlider,
     getCategories,
     getServiceList,
-    getServiceListByCategory
+    getServiceListByCategory,
+    createBooking
 };

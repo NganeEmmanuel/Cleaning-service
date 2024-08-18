@@ -1,10 +1,12 @@
 // App/Screen/HomeScreen.jsx
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, LogBox } from 'react-native';
 import Header from './Header';
 import Slider from './Slider';
 import Categories from './Categories';
 import ServiceList from './ServiceList';
+
+LogBox.ignoreLogs(['VirtualizedLists should never be nested']); //remove this when you want to debug this error
 
 export default function Home() {
   return (

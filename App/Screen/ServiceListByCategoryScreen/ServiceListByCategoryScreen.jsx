@@ -31,6 +31,7 @@ export default function ServiceListByCategoryScreen() {
 
       {serviceList?.length > 0? <FlatList 
       data={serviceList}
+      nestedScrollEnabled={true}
       style={{marginTop:15}}
       renderItem={({item, index}) => (
         <ServiceListItem service={item} />

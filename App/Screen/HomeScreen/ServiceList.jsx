@@ -26,6 +26,7 @@ export default function ServiceList() {
       <Heading text={'Latest Services'} isViewAll={true} />
       <FlatList 
       data={serviceList}
+      nestedScrollEnabled={true}
       horizontal={true}
       showsHorizontalScrollIndicator={false}
       renderItem={({item, index}) => (

@@ -44,6 +44,7 @@ export default function Categories() {
             <FlatList 
                 data={categories}
                 numColumns={4}
+                nestedScrollEnabled={true}
                 renderItem={({ item, index }) => index <= allCategories && (
                     <TouchableOpacity
                         onPress={() => navigation.push('service-list', {

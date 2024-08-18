@@ -1,15 +1,19 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import BackNavigation from '../../Common/BackNavigation'
 import CalendarPicker from "react-native-calendar-picker";
 import Colors from '../../Utils/Colors';
 import Heading from '../../Common/Heading';
+import GlobalApi from '../../Utils/GlobalApi';
+import { useUser } from '@clerk/clerk-expo'
 
-export default function BookingModal({hideModal}) {
+export default function BookingModal({serviceID, hideModal}) {
     const [timeList, setTimeList] = useState([])
     const [selectedTime, setSelectedTime] = useState()
     const [selectedDate, setSelectedDate] = useState()
     const [notes, setNotes] = useState()
+    const {user} = useUser()
+
     useEffect(() => {
         getTime()
     }, [])
@@ -38,6 +42,28 @@ export default function BookingModal({hideModal}) {
         }
 
         setTimeList(timeList)
+    }
+
+    /**
+     * Create the booking in the database by calling the createbooking method in global api
+     */
+    const creatNewBooking = () => {
+        if(!selectedTime || !selectedDate){
+            ToastAndroid.show('Please select date and time', ToastAndroid.LONG)
+            return;
+        }
+        const data = {
+            username : user?.fullName,
+            userEmail : user?.primaryEmailAddress.emailAddress,
+            time : selectedTime,
+            date : selectedDate,
+            notes : notes,
+            serviceID : serviceID
+        }
+        GlobalApi.createBooking(data).then(resp => {
+            console.log(resp)
+            ToastAndroid.show('Booking created successfully', ToastAndroid.LONG)
+        })
     }
 
   return (
@@ -71,6 +97,7 @@ export default function BookingModal({hideModal}) {
                 <Heading text={'Select Time'} />
                 <FlatList  
                     data={timeList}
+                    nestedScrollEnabled={true}
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                     renderItem={({item, index}) => (
@@ -90,12 +117,12 @@ export default function BookingModal({hideModal}) {
                 style={styles.noteTetxtArea} 
                 numberOfLines={6}
                 multiline={true}
-                onChange={(text) => setNotes(text)}
+                onChangeText={text => setNotes(text)}
                 />
             </View>
 
             {/* Confirmation Button section  */}
-            <TouchableOpacity style={{marginTop: 20}}>
+            <TouchableOpacity style={{marginTop: 20}} onPress={() => creatNewBooking()}>
                 <Text style={styles.confirmBtn}>Confirm & Book</Text>
             </TouchableOpacity>
         </KeyboardAvoidingView>

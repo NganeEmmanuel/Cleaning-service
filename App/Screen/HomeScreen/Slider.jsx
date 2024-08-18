@@ -20,6 +20,7 @@ export default function Slider() {
             <Heading text={'Offers For You'}/>
             <FlatList 
                 data={slider}
+                nestedScrollEnabled={true}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({item, index }) => (
