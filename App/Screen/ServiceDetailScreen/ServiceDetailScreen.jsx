@@ -1,14 +1,16 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Animated, Easing } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Animated, Easing, Modal } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../../Utils/Colors';
 import ServiceImages from './ServiceImages';
 import ServiceAbout from './ServiceAbout';
+import BookingModal from './BookingModal';
 
 export default function ServiceDetailScreen() {
     const param = useRoute().params;
     const [service, setService] = useState();
+    const [showModal, setShowModal] = useState(false)
     const navigation = useNavigation();
     const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -68,10 +70,15 @@ export default function ServiceDetailScreen() {
                     <TouchableOpacity style={styles.messageBtn}>
                         <Text style={styles.messageBtnText}>Message</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.bookinBtn}>
+                    <TouchableOpacity style={styles.bookinBtn} onPress={() => setShowModal(true)}>
                         <Text style={styles.bookingBtnText}>Book Now</Text>
                     </TouchableOpacity>
                 </View>
+
+                {/* Modal section for booking */}
+                <Modal animationType='slide' visible={showModal}>
+                    <BookingModal  hideModal={()=>setShowModal(false)}/>
+                </Modal>
             </View>
         </View>
     );

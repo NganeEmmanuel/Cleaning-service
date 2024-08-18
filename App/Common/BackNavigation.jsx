@@ -3,13 +3,14 @@ import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
-export default function BackNavigation({title}) {
+export default function BackNavigation({title, handle=true, onclick}) {
 
      //defind navigation
   const navigation =useNavigation()
 
   return (
-    <TouchableOpacity style={styles.navContainer} onPress={()=> navigation.goBack()}>
+    <TouchableOpacity style={styles.navContainer} 
+      onPress={handle? ()=> navigation.goBack(): () => onclick()}>
         <Ionicons name="arrow-back-outline" size={30} color="black" />
         <Text style={styles.navCategoryName}>{title}</Text>
       </TouchableOpacity>
