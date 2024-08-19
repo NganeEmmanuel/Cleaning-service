@@ -1,17 +1,23 @@
-import { View, Text, StyleSheet, Image } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import Colors from '../../Utils/Colors'
+import { useNavigation } from '@react-navigation/native'
 
 export default function ServiceListItemSmall({service}) {
+  const navigation = useNavigation()
   return (
-    <View style={styles.serviceListSmallContainer}>
+    <TouchableOpacity style={styles.serviceListSmallContainer} 
+      onPress={()=>navigation.push('service-details',{
+        service:service
+      })}
+    >
       <Image source={{uri:service?.images[0]?.url}} style={styles.serviceImage} />
       <View style={styles.serviceDetailsContainer}>
         <Text style={styles.serviceName}>{service?.name}</Text>
         <Text style={styles.serviceContactPerson}>{service?.contactPerson}</Text>
         <Text style={styles.serviceCategory}>{service?.category.name}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
