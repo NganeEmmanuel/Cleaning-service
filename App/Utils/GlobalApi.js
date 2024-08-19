@@ -15,6 +15,9 @@ const getHygraphToken = () => {
   };
 const HYGRAPH_TOKEN = getHygraphToken();
 
+/**
+ * @returns an array of Sliders
+ */
 const getSlider = async () => {
     const query = gql`
     query GetSlider {
@@ -50,7 +53,9 @@ const getSlider = async () => {
     }
 };
 
-//api call for getting categories
+/**
+ * @returns an array of all categories
+ */
 const getCategories = async () => {
     const query = gql`
     query GetCategory {
@@ -86,7 +91,9 @@ const getCategories = async () => {
     }
 };
 
-// Get list of service api call
+/**
+ * @returns an array of all available service lists
+ */
 const getServiceList = async () => {
     const query = gql`
     query GetServiceList {
@@ -129,7 +136,10 @@ const getServiceList = async () => {
     }
 };
 
-// Get list of service api call
+/**
+ * @param category string indicating the category of service
+ * @returns an array of service in that category
+ */
 const getServiceListByCategory = async (category) => {    
     const query = gql`
     query GetServiceList {
@@ -171,7 +181,10 @@ const getServiceListByCategory = async (category) => {
     }
 };
 
-// Get list of service api call
+/**
+ * @param data object containing the information for each booking
+ * @returns id of the booking created
+ */
 const createBooking = async (data) => {    
     const query = gql`
         mutation CreateBooking {
@@ -218,11 +231,62 @@ const createBooking = async (data) => {
     }
 };
 
+/**
+ * @param userEmail email of currently logged in user
+ * @returns an array of Bookings by that user
+ */
+const getBookingByUserEmail = async (userEmail) => {    
+    const query = gql`
+        query GetBookingsByUserEmail {
+            bookings(where: {userEmail: "${userEmail}"}, orderBy: updatedAt_DESC) {
+                id
+                date
+                time
+                bookingStatus
+                notes
+                service {
+                id
+                name
+                about
+                address
+                contactPerson
+                email
+                images {
+                    url
+                }
+                }
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error(`Error fetching service list data by userEmail (${category}):`, error);
+        throw error;
+    }
+};
+
 
 export default {
     getSlider,
     getCategories,
     getServiceList,
     getServiceListByCategory,
-    createBooking
+    createBooking,
+    getBookingByUserEmail
 };
