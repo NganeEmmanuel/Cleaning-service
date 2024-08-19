@@ -188,7 +188,7 @@ const createBooking = async (data) => {
             ) {
                 id
             }
-            publishManyBookingsConnection {
+            publishManyBookingsConnection(to: PUBLISHED) {
                 aggregate {
                 count
                 }

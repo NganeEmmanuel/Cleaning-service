@@ -48,7 +48,6 @@ const getClerkFrontendApi = () => {
 };
 
 const clerkFrontendApi = getClerkFrontendApi();
-console.log('Clerk Frontend API:', clerkFrontendApi);
 
 const Stack = createNativeStackNavigator();
 

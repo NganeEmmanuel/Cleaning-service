@@ -6,6 +6,7 @@ import Colors from '../../Utils/Colors';
 import ServiceImages from './ServiceImages';
 import ServiceAbout from './ServiceAbout';
 import BookingModal from './BookingModal';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
 
 export default function ServiceDetailScreen() {
     const param = useRoute().params;
@@ -19,6 +20,12 @@ export default function ServiceDetailScreen() {
         param && setService(param?.service);
     }, [param]);
 
+    const successfulBooking = () => {
+        showMessage({
+            message: "Service Booked successfully",
+            type: "success",
+          });
+    }
     const imageHeight = scrollY.interpolate({
         inputRange: [0, 500], // Extended scroll distance for smoother transition
         outputRange: [300, 70], // Height transition range
@@ -78,9 +85,14 @@ export default function ServiceDetailScreen() {
 
                 {/* Modal section for booking */}
                 <Modal animationType='slide' visible={showModal}>
-                    <BookingModal  hideModal={()=>setShowModal(false)} serviceID={service?.id}/>
+                    <BookingModal 
+                        hideModal={() => setShowModal(false)} 
+                        serviceID={service?.id}
+                        successfulBooking={successfulBooking}
+                    />
                 </Modal>
             </View>
+            <FlashMessage position="bottom"/>
         </View>
     );
 }

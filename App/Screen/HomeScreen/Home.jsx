@@ -1,5 +1,5 @@
 // App/Screen/HomeScreen.jsx
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, StyleSheet, ScrollView, LogBox } from 'react-native';
 import Header from './Header';
 import Slider from './Slider';
@@ -9,6 +9,7 @@ import ServiceList from './ServiceList';
 LogBox.ignoreLogs(['VirtualizedLists should never be nested']); //remove this when you want to debug this error
 
 export default function Home() {
+  const ref = useRef()
   return (
     <View style={styles.container}>
       {/* Header section */}
