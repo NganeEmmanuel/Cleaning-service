@@ -43,7 +43,6 @@ export default function BookingModal({ serviceID, hideModal, successfulBooking }
             userEmail: user?.primaryEmailAddress.emailAddress,
             time: selectedTime,
             date: formatDate(selectedDate, "MMM dd yyyy"),
-            // date: selectedDate,
             notes: notes,
             serviceID: serviceID
         };

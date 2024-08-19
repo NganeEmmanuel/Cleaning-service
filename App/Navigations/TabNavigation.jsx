@@ -5,6 +5,7 @@ import BookingScreen from '../Screen/BookingScreen/BookingScreen';
 import ProfileScreen from '../Screen/ProfileScreen/ProfileScreen'
 import Colors from '../Utils/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import HomeNavigation from './HomeNavigation';
 
 const Tab = createBottomTabNavigator();
@@ -30,6 +31,14 @@ export default function TabNavigation() {
             ),
             tabBarIcon:({color, size})=>(
                 <FontAwesome name="bookmark" size={size} color={color} />
+            )
+        }}/>
+        <Tab.Screen name='Services' component={ProfileScreen} options={{
+            tabBarLabel: ({color}) =>(
+                <Text style={{color:color, fontSize:12, marginTop: -7 }}>My Services</Text>
+            ),
+            tabBarIcon:({color, size})=>(
+                <MaterialIcons name="dashboard-customize" size={size} color={color} />
             )
         }}/>
         <Tab.Screen name='Profile' component={ProfileScreen} options={{

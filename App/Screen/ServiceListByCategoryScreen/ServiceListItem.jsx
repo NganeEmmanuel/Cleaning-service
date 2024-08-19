@@ -5,13 +5,17 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
-export default function ServiceListItem({service, booking}) {
+export default function ServiceListItem({service, booking, showModal}) {
     const navigation =useNavigation()
   return (
     <TouchableOpacity style={styles.container} 
-        onPress={()=>navigation.push('service-details',{
+        onPress={!booking?.id?
+          ()=>navigation.push('service-details',{
             service:service
-        })}
+        }) :
+        () => showModal(booking)
+
+      }
     >
       <Image source={{uri:service?.images[0]?.url}} 
         style={!booking?.bookingStatus? styles.serviceImage: styles.serviceBookingImage} />
@@ -122,7 +126,7 @@ bookingStatusComplete: {
 
 bookingTime: {
   fontFamily: 'outfit',
-  fontSize: 15,
+  fontSize: 13,
   color: Colors.GREY
 }
 

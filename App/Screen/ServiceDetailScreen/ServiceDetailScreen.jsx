@@ -16,7 +16,6 @@ export default function ServiceDetailScreen() {
     const scrollY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        console.log(param?.service)
         param && setService(param?.service);
     }, [param]);
 
