@@ -1,10 +1,9 @@
-import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, RefreshControl,SafeAreaView, ToastAndroid } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
 import Heading from '../../Common/Heading'
 import GlobalApi from '../../Utils/GlobalApi'
 import { useUser } from '@clerk/clerk-expo';
 import ServiceListItem from '../ServiceListByCategoryScreen/ServiceListItem';
-import BookingDetailsModal from './BookingDetailsModal';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -13,14 +12,23 @@ import Colors from '../../Utils/Colors';
 export default function BookingScreen() {
 
   const [bookings, setBookings] = useState([])
-  const [showModal, setShowModal] = useState(false)
   const [modalBooking, setModalBooking] = useState()
   const {user} = useUser()
   const [modalDisplay, setModalDisplay] = useState('none')
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getUserBookings()
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [getUserBookings]);
+
 
   useEffect(() =>{
     user&&getUserBookings()
-  },[user])
+  },[user, bookings])
 
   const getUserBookings = () => {
     GlobalApi.getBookingByUserEmail(user?.primaryEmailAddress.emailAddress).then(resp => {
@@ -43,9 +51,22 @@ export default function BookingScreen() {
     setModalBooking(booking)
     setModalDisplay('flex')
   }
+
+  /**
+   * update booking status as complete
+   */
+  const updateBookingStatus = (status) => {
+    modalBooking?.bookingStatus === 'booked' || (modalBooking?.bookingStatus === 'inProgress' && status != 'canceled')?
+      GlobalApi.updateBookingStatus(modalBooking?.id, status).then(resp => {
+        setModalDisplay('none')
+      }) :
+      ToastAndroid.show("Cannot cancel booking of this status", ToastAndroid.LONG)
+  }
   return (
-    <View>
-      <ScrollView style={styles.container}>
+    <SafeAreaView>
+      <ScrollView style={styles.container} refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.PRIMARY}/>
+      }>
 
         {/* Heading section */}
         <View style={styles.headingContainer}>
@@ -112,17 +133,25 @@ export default function BookingScreen() {
               {`Starts at ${modalBooking?.time}`}
             </Text>
           </View>
-          <View style={styles.modalActionContainer}>
-              <TouchableOpacity>
+          <View style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: modalBooking?.bookingStatus === 'inProgress'?'space-around':'space-between',
+            paddingLeft: 10,
+            paddingRight: 10,
+            flex: 1,
+          }}>
+              {modalBooking?.bookingStatus === 'booked' &&<TouchableOpacity onPress={() => updateBookingStatus('canceled')}>
                 <Text style={styles.actionBtn1}>Cancle</Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
+              </TouchableOpacity>}
+              {['inProgress', 'booked'].includes(modalBooking?.bookingStatus) &&<TouchableOpacity onPress={() => updateBookingStatus('completed')}>
                 <Text style={styles.actionBtn2}>Completed</Text>
-              </TouchableOpacity>
+              </TouchableOpacity>}
           </View>
         </View>
       <FlashMessage position="bottom"/>
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -157,18 +186,9 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color:Colors.BLACK
   },
-  modalActionContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: 10,
-    paddingRight: 10
-    
-  },
 
   actionBtn1: {
-    padding: 16,
+    padding: 14,
     paddingHorizontal: 40,
     borderColor: Colors.PRIMARY,
     color: Colors.PRIMARY,
@@ -181,7 +201,7 @@ const styles = StyleSheet.create({
   },
 
   actionBtn2: {
-    padding: 16,
+    padding: 14,
     paddingHorizontal: 40,
     borderColor: Colors.PRIMARY,
     color: Colors.WHITE,
@@ -189,7 +209,7 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     fontFamily: 'outfit',
     fontSize: 17,
-    borderWidth: 1
+    borderWidth: 1,
 
   }
 })

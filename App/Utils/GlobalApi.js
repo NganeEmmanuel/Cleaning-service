@@ -276,7 +276,45 @@ const getBookingByUserEmail = async (userEmail) => {
         const result = await response.json();
         return result.data;
     } catch (error) {
-        console.error(`Error fetching service list data by userEmail (${category}):`, error);
+        console.error(`Error fetching service list data by userEmail (${userEmail}):`, error);
+        throw error;
+    }
+};
+
+/**
+ * @param bookingID id of the booking for this loggedin user
+ * @returns an the id of the booking
+ */
+const updateBookingStatus = async (bookingID, status) => {    
+    const query = gql`
+        mutation MarkBookingAsComplete {
+            updateBooking(data: {bookingStatus: ${status}}, where: {id: "${bookingID}"}) {
+                id
+            }
+            publishBooking(where: {id: "${bookingID}"}) {
+                id
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error(`Error fetching marking booing as complete with id (${bookingID}):`, error);
         throw error;
     }
 };
@@ -288,5 +326,6 @@ export default {
     getServiceList,
     getServiceListByCategory,
     createBooking,
-    getBookingByUserEmail
+    getBookingByUserEmail,
+    updateBookingStatus
 };

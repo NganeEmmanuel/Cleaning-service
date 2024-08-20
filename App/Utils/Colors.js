@@ -6,4 +6,6 @@ export default{
     LIGHT_GREY: '#EDEDED',
     GREY: '#8c8b8c',
     WARNING: '#de6a62',
+    SUCCESS: '#48db9c',
+    INFO: '#43cde6'
 }

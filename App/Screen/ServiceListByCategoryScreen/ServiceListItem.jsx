@@ -35,9 +35,10 @@ export default function ServiceListItem({service, booking, showModal}) {
               <FontAwesome name="calendar-check-o" size={20} color={Colors.PRIMARY} />
               {`${booking?.date} at ${booking?.time}`}
               </Text>
-          {booking?.bookingStatus == "booked"&&<Text style={styles.bookingStatusBooked}>{booking?.bookingStatus}</Text>}
-          {booking?.bookingStatus == "inProgress"&&<Text style={styles.bookingStatusInProgress}>{booking?.bookingStatus}</Text>}
-          {booking?.bookingStatus == "completed"&&<Text style={styles.bookingStatusComplete}>{booking?.bookingStatus}</Text>}
+          {booking?.bookingStatus === "booked"&&<Text style={styles.bookingStatusBooked}>{booking?.bookingStatus}</Text>}
+          {booking?.bookingStatus === "inProgress"&&<Text style={styles.bookingStatusInProgress}>{booking?.bookingStatus}</Text>}
+          {booking?.bookingStatus === "completed"&&<Text style={styles.bookingStatusComplete}>{booking?.bookingStatus}</Text>}
+          {booking?.bookingStatus === "canceled"&&<Text style={styles.bookingStatusCanceled}>{booking?.bookingStatus}</Text>}
           </View>}
       </View>
     </TouchableOpacity>
@@ -92,8 +93,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'outfit',
     padding: 3,
-    color: Colors.PRIMARY,
-    backgroundColor: Colors.PRIMARY_LIGHT,
+    color: Colors.WHITE,
+    backgroundColor: Colors.PRIMARY,
     borderRadius: 3,
     alignSelf: 'flex-start',
     paddingHorizontal: 15,
@@ -104,8 +105,8 @@ bookingStatusInProgress: {
   fontSize: 16,
     fontFamily: 'outfit',
     padding: 3,
-    color: Colors.PRIMARY,
-    backgroundColor: Colors.PRIMARY_LIGHT,
+    color: Colors.WHITE,
+    backgroundColor: Colors.INFO,
     borderRadius: 3,
     alignSelf: 'flex-start',
     paddingHorizontal: 15,
@@ -116,8 +117,20 @@ bookingStatusComplete: {
   fontSize: 16,
     fontFamily: 'outfit',
     padding: 3,
-    color: Colors.PRIMARY,
-    backgroundColor: Colors.PRIMARY_LIGHT,
+    color: Colors.WHITE,
+    backgroundColor: Colors.SUCCESS,
+    borderRadius: 3,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 15,
+    marginTop: 10
+},
+
+bookingStatusCanceled: {
+  fontSize: 16,
+    fontFamily: 'outfit',
+    padding: 3,
+    color: Colors.WHITE,
+    backgroundColor: Colors.WARNING,
     borderRadius: 3,
     alignSelf: 'flex-start',
     paddingHorizontal: 15,
