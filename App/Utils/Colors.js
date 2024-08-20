@@ -5,4 +5,5 @@ export default{
     WHITE: '#fff',
     LIGHT_GREY: '#EDEDED',
     GREY: '#8c8b8c',
+    WARNING: '#de6a62',
 }
