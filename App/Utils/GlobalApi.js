@@ -276,13 +276,14 @@ const getBookingByUserEmail = async (userEmail) => {
         const result = await response.json();
         return result.data;
     } catch (error) {
-        console.error(`Error fetching service list data by userEmail (${userEmail}):`, error);
+        console.error(`Error fetching booking list data by userEmail (${userEmail}):`, error);
         throw error;
     }
 };
 
 /**
- * @param bookingID id of the booking for this loggedin user
+ * @param bookingID id(string) identifying the booking for this loggedin user
+ * @param status string indicating the status of this booking
  * @returns an the id of the booking
  */
 const updateBookingStatus = async (bookingID, status) => {    
@@ -315,6 +316,47 @@ const updateBookingStatus = async (bookingID, status) => {
         return result.data;
     } catch (error) {
         console.error(`Error fetching marking booing as complete with id (${bookingID}):`, error);
+        throw error;
+    }
+};
+
+/**
+ * @param userEmail email of currently logged in user
+ * @returns an array of Services by that user
+ */
+const getServicesByUserEmail = async (userEmail) => {    
+    const query = gql`
+        query GetServiceListByUserEmail {
+            serviceLists(where: {email: "${userEmail}"}) {
+                about
+                address
+                createdAt
+                id
+                images {
+                url
+                }
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error(`Error fetching service list data by userEmail (${userEmail}):`, error);
         throw error;
     }
 };
