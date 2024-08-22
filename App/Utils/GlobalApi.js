@@ -332,8 +332,13 @@ const getServicesByUserEmail = async (userEmail) => {
                 address
                 createdAt
                 id
+                name
+                pricePerHour
+                category {
+                    name
+                }
                 images {
-                url
+                    url
                 }
             }
         }

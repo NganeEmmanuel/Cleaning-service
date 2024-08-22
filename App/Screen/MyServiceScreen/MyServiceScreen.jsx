@@ -38,7 +38,7 @@ export default function MyServiceScreen() {
                 <FlatList 
                 data={services}
                 renderItem={({item, index}) => (
-                    <ActiveService  />
+                    <ActiveService service={item} />
                 )}
                 />
             </View>
