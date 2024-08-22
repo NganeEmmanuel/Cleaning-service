@@ -369,5 +369,6 @@ export default {
     getServiceListByCategory,
     createBooking,
     getBookingByUserEmail,
-    updateBookingStatus
+    updateBookingStatus,
+    getServicesByUserEmail
 };
