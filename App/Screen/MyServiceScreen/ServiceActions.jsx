@@ -3,11 +3,14 @@ import React from 'react'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Colors from './../../Utils/Colors'
+import { useNavigation } from '@react-navigation/native';
 
 export default function ServiceActions() {
+
+  const navigation = useNavigation()
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.addServiceBtn}>
+      <TouchableOpacity style={styles.addServiceBtn} onPress={()=>navigation.push('add-service')}>
         <FontAwesome6 name="add" size={35} color={Colors.PRIMARY} />
         <Text style={styles.addBtnText}>Add service</Text>
       </TouchableOpacity>

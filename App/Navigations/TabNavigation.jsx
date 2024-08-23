@@ -7,7 +7,7 @@ import Colors from '../Utils/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import HomeNavigation from './HomeNavigation';
-import MyServiceScreen from '../Screen/MyServiceScreen/MyServiceScreen';
+import MyServicesNavigation from './MyServicesNavigation';
 
 const Tab = createBottomTabNavigator();
 export default function TabNavigation() {
@@ -34,7 +34,7 @@ export default function TabNavigation() {
                 <FontAwesome name="bookmark" size={size} color={color} />
             )
         }}/>
-        <Tab.Screen name='MyServices' component={MyServiceScreen} options={{
+        <Tab.Screen name='MyServices' component={MyServicesNavigation} options={{
             tabBarLabel: ({color}) =>(
                 <Text style={{color:color, fontSize:12, marginTop: -7 }}>My Services</Text>
             ),
