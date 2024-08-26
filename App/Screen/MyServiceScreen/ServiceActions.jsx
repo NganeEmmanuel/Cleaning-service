@@ -14,7 +14,7 @@ export default function ServiceActions() {
         <FontAwesome6 name="add" size={35} color={Colors.PRIMARY} />
         <Text style={styles.addBtnText}>Add service</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.browseOrdersBtn}>
+      <TouchableOpacity style={styles.browseOrdersBtn} onPress={()=>navigation.push('browse-service')}>
         <MaterialIcons name="local-offer" size={35} color="white" />
         <Text style={styles.browseServiceBtnText}>Browse Orders</Text>
       </TouchableOpacity>

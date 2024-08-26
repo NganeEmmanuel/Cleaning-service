@@ -20,10 +20,11 @@ export default function ServiceListItem({service, booking, showModal}) {
       <Image source={{uri:service?.images[0]?.url}} 
         style={!booking?.bookingStatus? styles.serviceImage: styles.serviceBookingImage} />
       <View style={styles.serviceInforContainer}>
-        <Text style={styles.serviceName}>{service.name}</Text>
+        <Text style={styles.serviceName}>{service?.name}</Text>
 
         {/* show only if is not for booking screen  */}
-        <Text style={styles.serviceContactPerson}>{service.contactPerson}</Text>
+        <Text style={styles.serviceContactPerson}>{!booking?.service? service?.contactPerson : booking?.userName}</Text>
+
         {!booking?.id&&<Text style={styles.serviceAddress}>
             <Ionicons name="location-sharp" size={15} color={Colors.PRIMARY}/>
             {service.address}

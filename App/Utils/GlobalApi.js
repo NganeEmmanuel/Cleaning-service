@@ -366,6 +366,58 @@ const getServicesByUserEmail = async (userEmail) => {
     }
 };
 
+/**
+ * @param userEmail String of user email address
+ * @returns a list of all bookings associated with services associated with this email
+ */
+const getOrdersByUserEmail = async (userEmail) => {    
+    const query = gql`
+        query GetOrdersByUserEmail {
+            bookings(where: {service: {email: "${userEmail}"}}) {
+                id
+                notes
+                bookingStatus
+                createdAt
+                userName
+                time
+                date
+                service {
+                    about
+                    address
+                    name
+                    pricePerHour
+                    serviceStatus
+                    id
+                    images {
+                        url
+                    }
+                }
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error(`Error fetching orders with for useremail (${userEmail}):`, error);
+        throw error;
+    }
+};
+
 
 export default {
     getSlider,
@@ -375,5 +427,6 @@ export default {
     createBooking,
     getBookingByUserEmail,
     updateBookingStatus,
-    getServicesByUserEmail
+    getServicesByUserEmail,
+    getOrdersByUserEmail
 };

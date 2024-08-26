@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, FlatList, Button, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, FlatList, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import BackNavigation from './../../Common/BackNavigation';
-import { Picker } from '@react-native-picker/picker'; // Correct import
+import { Picker } from '@react-native-picker/picker';
 import Colors from '../../Utils/Colors';
+import GlobalApi from '../../Utils/GlobalApi';
 
 export default function AddServiceScreen() {
     const [serviceName, setServiceName] = useState('');
@@ -12,8 +13,13 @@ export default function AddServiceScreen() {
     const [contactNumber, setContactNumber] = useState('');
     const [images, setImages] = useState([]);
     const [selectedOption, setSelectedOption] = useState('');
+    const [categories, setCategories] = useState([])
 
-    const options = ['Option 1', 'Option 2', 'Option 3'];
+    useEffect(() => {
+        GlobalApi.getCategories().then(resp => {
+            setCategories(resp?.categories)
+        })
+    }, [categories])
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -23,7 +29,7 @@ export default function AddServiceScreen() {
         });
 
         if (!result.canceled) {
-            setImages([...images, ...result.selected || [result]]);
+            setImages([...images, ...(result.selected || [result])]);
         }
     };
 
@@ -32,7 +38,7 @@ export default function AddServiceScreen() {
     };
 
     const renderImageItem = ({ item, index }) => (
-        <View style={styles.imageContainer}>
+        <View style={styles.imageContainer} key={index}>
             <Image source={{ uri: item.uri }} style={styles.image} />
             <TouchableOpacity onPress={() => removeImage(index)} style={styles.removeButton}>
                 <Text style={styles.removeButtonText}>X</Text>
@@ -40,11 +46,25 @@ export default function AddServiceScreen() {
         </View>
     );
 
+    const handleSubmit = () => {
+        const data = {
+            serviceName,
+            pricePerHour,
+            description,
+            contactNumber,
+            selectedOption,
+            images,
+        };
+
+        console.log('Form Data:', data);
+        // Handle the data submission (e.g., send to backend)
+    };
+
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
             <BackNavigation title={'Add Service'} />
-            
-            <View style={styles.form}>
+
+            <ScrollView contentContainerStyle={styles.form}>
                 <TextInput
                     style={styles.input}
                     placeholder="Service Name"
@@ -80,44 +100,44 @@ export default function AddServiceScreen() {
                         <Picker
                             selectedValue={selectedOption}
                             onValueChange={(itemValue) => setSelectedOption(itemValue)}
-                            
                         >
-                            {options.map((option, index) => (
-                                <Picker.Item key={index} label={option} value={option} />
+                            {categories.map((option) => (
+                                <Picker.Item key={option.id} label={option.name} value={option.id} />
                             ))}
                         </Picker>
                     </View>
                 </View>
-                
-                <TouchableOpacity onPress={pickImage} style={{
-                    backgroundColor: Colors.PRIMARY,
-                    padding: 15,
-                    borderRadius: 5,
-                    alignItems: 'center',
-                    marginTop: 20}}>
-                    <Text style={{color: Colors.WHITE}}>Add Images</Text>
+
+                <TouchableOpacity onPress={pickImage} style={styles.addButton}>
+                    <Text style={styles.addButtonText}>Add Images</Text>
                 </TouchableOpacity>
+
                 <FlatList
                     data={images}
                     renderItem={renderImageItem}
-                    keyExtractor={(item) => item.uri}
+                    keyExtractor={(item, index) => index.toString()}
                     horizontal
                     style={styles.imageList}
                 />
-            </View>
-        </ScrollView>
+            </ScrollView>
+
+            {/* Fixed Confirm & Save Button */}
+            <TouchableOpacity onPress={handleSubmit} style={styles.confirmButton}>
+                <Text style={styles.confirmButtonText}>Confirm & Save</Text>
+            </TouchableOpacity>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
         backgroundColor: '#fff',
-        marginTop: 20,
+        paddingTop: 40,
     },
     form: {
-        marginTop: 20,
+        padding: 20,
+        paddingBottom: 80, // Adds space at the bottom of the form to avoid overlap with the button
     },
     input: {
         borderWidth: 1,
@@ -162,6 +182,30 @@ const styles = StyleSheet.create({
     },
     removeButtonText: {
         color: '#fff',
+        fontWeight: 'bold',
+    },
+    addButton: {
+        backgroundColor: Colors.BLACK,
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    addButtonText: {
+        color: Colors.WHITE,
+    },
+    confirmButton: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: Colors.PRIMARY,
+        padding: 15,
+        alignItems: 'center',
+    },
+    confirmButtonText: {
+        color: Colors.WHITE,
+        fontSize: 16,
         fontWeight: 'bold',
     },
 });
