@@ -418,6 +418,251 @@ const getOrdersByUserEmail = async (userEmail) => {
     }
 };
 
+/**
+ * @param image image object you wan to add in the database
+ * @returns id of the added image
+ */
+const createAsset = async (image) => {
+    const query = gql`
+        mutation CreateAsset {
+            createAsset(data: {}) {
+                id
+                url
+                upload {
+                    status
+                    expiresAt
+                    error {
+                        code
+                        message
+                    }
+                    requestPostData {
+                        key
+                        policy
+                        algorithm
+                        credential
+                        date
+                        securityToken
+                        signature
+                        url
+                    }
+                }
+            }
+        }
+
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data.createAsset;
+    } catch (error) {
+        console.error(`Error adding service for this data: (${JSON.stringify(data)}):`, error);
+        throw error;
+    }
+};
+
+const uploadImageToS3 = async (image) => {
+    try {
+        // Step 1: Get the upload details
+        const { url, id, error, upload } = await createAsset(image);
+        console.log(id)
+
+        const formData = new FormData();
+        formData.append('X-Amz-Date', upload.requestPostData.date);
+        formData.append('key', upload.requestPostData.key);
+        formData.append('X-Amz-Signature', upload.requestPostData.signature);
+        formData.append('X-Amz-Algorithm', upload.requestPostData.algorithm);
+        formData.append('policy', upload.requestPostData.policy);
+        formData.append('X-Amz-Credential', upload.requestPostData.credential);
+        formData.append('X-Amz-Security-Token', upload.requestPostData.securityToken);
+        formData.append('file', {
+            uri: image.uri,
+            type: image.type,
+            name: image.filename,
+        });
+
+        // Step 2: Upload the image to S3
+        const uploadResponse = await fetch(upload.requestPostData.url, {
+            method: 'POST',
+            body: formData,
+        });
+
+        // Log the response status
+        console.log('Upload Response Status:', uploadResponse.status);
+
+        if (uploadResponse.status === 204) {
+            // Handle successful upload
+            console.log('Upload successful.');
+            return id;
+        } else {
+            // Handle other response status
+            const responseText = await uploadResponse.text();
+            throw new Error(`HTTP error! status: ${uploadResponse.status}`);
+        }
+    } catch (error) {
+        console.error('Error uploading image to S3:', error);
+        throw error;
+    }
+};
+
+/**
+ * @param id id of the asset ou want to publish
+ * @returns count
+ */
+const publishAsset = async (id) => {
+    const query = gql`
+        mutation publishAsset {
+            publishManyAssetsConnection(to: PUBLISHED, where: {id: "${id}"}) {
+                aggregate {
+                    count
+                }
+            }
+        }
+
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error(`Error publishing asset with id: ${id}:`, error);
+        throw error;
+    }
+};
+
+/**
+ * @param id id of the service you want to publish
+ * @returns count
+ */
+const publishService = async (id) => {
+    const query = gql`
+        mutation publishService {
+            publishManyServiceListsConnection(to: PUBLISHED, where: {id: "${id}"}) {
+                aggregate {
+                    count
+                }
+            }
+        }
+
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error(`Error publishing service with id: ${id}:`, error);
+        throw error;
+    }
+};
+
+
+
+
+
+/**
+ * @param data object containing the information for the service we are adding
+ * @returns id of the service created
+ */
+const addService = async (data) => {
+    // Step 1: Upload images and get asset IDs
+    const imageAssetIds = await Promise.all(data.images.map(async (image) => {
+        const assetId = await uploadImageToS3(image);
+        return assetId;
+    }));
+    
+    //get is of assets
+    const ids = imageAssetIds;
+
+    // Step 2: Use the asset IDs to create the service entry
+    const query = gql`
+        mutation AddService {
+            createServiceList(
+                data: {
+                    name: "${data.serviceName}", 
+                    contactPerson: "${data.contactPerson}",
+                    phoneNumber: "${data.contactNumber}", 
+                    email: "${data.email}", 
+                    about: "${data.description}", 
+                    address: "${data.address}", 
+                    pricePerHour: "${data.pricePerHour}", 
+                    serviceStatus: active, 
+                    category: {connect: {id: "${data.selectedOption}"}},
+                    images: {connect: [${imageAssetIds.map(id => `{id: "${id}"}`).join(", ")}]}
+                }
+            ) {
+                id
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+
+        //publish service and assets
+        console.log('serviceid: ', result.data.createServiceList.id)
+        const publishedServiceData = await publishService(result.data.createServiceList.id)
+        ids.map(id => publishAsset(id))
+        return "success";
+    } catch (error) {
+        console.error(`Error adding service for this data: (${JSON.stringify(data)}):`, error);
+        throw error;
+    }
+};
+
+
+
+
 
 export default {
     getSlider,
@@ -428,5 +673,6 @@ export default {
     getBookingByUserEmail,
     updateBookingStatus,
     getServicesByUserEmail,
-    getOrdersByUserEmail
+    getOrdersByUserEmail,
+    addService
 };

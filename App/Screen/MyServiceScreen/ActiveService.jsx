@@ -6,7 +6,7 @@ import { formatDistance } from 'date-fns'
 export default function ActiveService({service, onClick}) {
   return (
     <TouchableOpacity style={styles.container} onPress={() => onClick(service)}>
-      <Image source={{uri:service?.images[0].url}} style={styles.serviceImage} />
+      <Image source={{uri:service?.images[0]?.url}} style={styles.serviceImage} />
       <View style={styles.serviceInfoContainer}>
             <Text style={styles.serviceName}>{service?.name}</Text>
             <Text style={styles.price}>{`2500 frs / hour`}</Text>

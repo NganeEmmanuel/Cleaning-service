@@ -5,7 +5,24 @@ import BackNavigation from './../../Common/BackNavigation';
 import { Picker } from '@react-native-picker/picker';
 import Colors from '../../Utils/Colors';
 import GlobalApi from '../../Utils/GlobalApi';
+import { useUser } from '@clerk/clerk-expo';
 
+/**
+ * Todo for GPT. Please implement the following
+ * 
+ * 1. Make sure that, when the user clicks the "confirm & save" button, a loading screen is displayed over the content.
+ * 2. if the save is sucessfull, you will display a success message in green text and after two seconds, go back to the previous screen (that is call navigation.goBack())
+ * 3. if not successfull or there is any error, you will display an appropriate error to fit the situations
+ * 
+ * You will design the load screen as foollows:
+ * - It will have an opacity of .5 so that the main components of this page are still visble but can't be interacted with
+ * - it will cover the entire screean and cannot be closed
+ * - it will have a background color of white
+ * - it will have a loading spinner icon at the center withe text underneath saying "Verifying & Saving Service now..."
+ * - it will be above all other elements.
+ * - let it be a new component on its own that we can reuse in other place. Use props if need be to make it functional
+ * 
+ */
 export default function AddServiceScreen() {
     const [serviceName, setServiceName] = useState('');
     const [pricePerHour, setPricePerHour] = useState('');
@@ -14,6 +31,8 @@ export default function AddServiceScreen() {
     const [images, setImages] = useState([]);
     const [selectedOption, setSelectedOption] = useState('');
     const [categories, setCategories] = useState([])
+    const [address, setAddress] = useState('')
+    const {user} = useUser();
 
     useEffect(() => {
         GlobalApi.getCategories().then(resp => {
@@ -24,14 +43,20 @@ export default function AddServiceScreen() {
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsMultipleSelection: true,
+            allowsEditing: false,
             quality: 1,
         });
-
-        if (!result.canceled) {
-            setImages([...images, ...(result.selected || [result])]);
+    
+        if (!result.canceled && result.assets) {
+            const selectedImages = result.assets.map(img => ({
+                uri: img.uri, // Required by your backend
+                filename: img.fileName,
+                type: img.mimeType, // Optional, include if needed
+            }));
+            setImages([...images, ...selectedImages]);
         }
     };
+    
 
     const removeImage = (index) => {
         setImages(images.filter((_, i) => i !== index));
@@ -53,11 +78,27 @@ export default function AddServiceScreen() {
             description,
             contactNumber,
             selectedOption,
+            contactPerson: user.fullName,
+            email: user?.primaryEmailAddress.emailAddress,
+            address,
             images,
         };
 
-        console.log('Form Data:', data);
-        // Handle the data submission (e.g., send to backend)
+        /**
+         * TODO for you GPT. I want you to check the values and make sure of the following
+         * 
+         * 1. Only Valid strings can be entered in for the input [service name]
+         * 2. Only Valid positive decimals can be entered in for the input [price per hourse]
+         * 3. Only a valid 9-digit number can be entered for the input [Contact Number]
+         * 4. the value of selected option must not be empty or blank
+         * 5. Atleast one image must be added
+         */
+       if(GlobalApi.addService(data) === "success"){
+            //implement for success
+       }else{
+            //implement for unsuccessfu
+       }
+    //    console.log(images)
     };
 
     return (
@@ -88,6 +129,12 @@ export default function AddServiceScreen() {
                 />
                 <TextInput
                     style={styles.input}
+                    placeholder="Address"
+                    value={address}
+                    onChangeText={setAddress}
+                />
+                <TextInput
+                    style={styles.input}
                     placeholder="Contact Number"
                     keyboardType="phone-pad"
                     value={contactNumber}
@@ -101,6 +148,7 @@ export default function AddServiceScreen() {
                             selectedValue={selectedOption}
                             onValueChange={(itemValue) => setSelectedOption(itemValue)}
                         >
+                            <Picker.Item key={0} label={''} value={""} />
                             {categories.map((option) => (
                                 <Picker.Item key={option.id} label={option.name} value={option.id} />
                             ))}
