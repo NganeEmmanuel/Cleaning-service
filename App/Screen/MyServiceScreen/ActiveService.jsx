@@ -9,7 +9,7 @@ export default function ActiveService({service, onClick}) {
       <Image source={{uri:service?.images[0]?.url}} style={styles.serviceImage} />
       <View style={styles.serviceInfoContainer}>
             <Text style={styles.serviceName}>{service?.name}</Text>
-            <Text style={styles.price}>{`2500 frs / hour`}</Text>
+            <Text style={styles.price}>{`${service?.pricePerHour} / hour`}</Text>
             <Text style={styles.category}>{service?.category?.name}</Text>
             <Text style={styles.dateCreated}>{formatDistance(new Date(service?.createdAt), new Date(), {
                 addSuffix: true
@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
         fontFamily: 'outfit-medium',
         fontSize: 17,
         color: Colors.BLACK,
+        width: 155
     },
 
     price: {

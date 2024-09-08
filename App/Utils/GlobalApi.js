@@ -333,6 +333,7 @@ const getServicesByUserEmail = async (userEmail) => {
                 createdAt
                 id
                 name
+                serviceStatus
                 pricePerHour
                 category {
                     name
@@ -656,11 +657,86 @@ const addService = async (data) => {
         return "success";
     } catch (error) {
         console.error(`Error adding service for this data: (${JSON.stringify(data)}):`, error);
-        throw error;
+        return "unsuccessful"
     }
 };
 
 
+/**
+ * Deletes a service with matching id from the database
+ * 
+ * @param serviceID String of service id you want to delete
+ * @returns the id if the service that has been deleted
+ */
+const deleteServiceById = async (serviceID) => {    
+    const query = gql`
+        mutation delateServiceByIdAndUserEmail {
+            deleteServiceList(where: {id: "${serviceID}"}) {
+                id
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return "success";
+    } catch (error) {
+        console.error(`Error deleting service with id (${serviceID}):`, error);
+        return "unsuccessful"
+    }
+};
+
+/**
+ * Updates the service status who's id matches the provided id in the database
+ * 
+ * @param serviceID String of service id you want to delete
+ * @param status the new status you want to change to
+ * @returns the id if the service whoes status has changed
+ */
+const updateServiceStatus = async (serviceID, status) => {    
+    const query = gql`
+        mutation updateServiceStatus {
+            updateServiceList(where: {id: "${serviceID}"}, data: {serviceStatus: ${status}}) {
+                id
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        const publishedServiceData = await publishService(result.data.updateServiceList.id)
+        return "success";
+    } catch (error) {
+        console.error(`Error update service status with id (${serviceID}):`, error);
+        return "unsuccessful"
+    }
+};
 
 
 
@@ -674,5 +750,7 @@ export default {
     updateBookingStatus,
     getServicesByUserEmail,
     getOrdersByUserEmail,
-    addService
+    addService,
+    deleteServiceById,
+    updateServiceStatus
 };

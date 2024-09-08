@@ -8,8 +8,9 @@ import ActiveService from './ActiveService'
 import Colors from '../../Utils/Colors'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import CustomModal from '../../Common/CustomModal'
-
+import FlashMessage, { showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
+import { se } from 'date-fns/locale/se'
 
 export default function MyServiceScreen() {
 
@@ -27,6 +28,10 @@ export default function MyServiceScreen() {
         getServiceByUserEmail()
     }, [user, services])
 
+    const refreshPage = () => {
+        getServiceByUserEmail()
+    }
+
     const showModal = (serviceToView) => {
         setModalService(serviceToView)
         setModalVisible(true)
@@ -36,6 +41,43 @@ export default function MyServiceScreen() {
         GlobalApi.getServicesByUserEmail(user?.primaryEmailAddress.emailAddress)
         .then(resp => {
             setServices(resp?.serviceLists)
+        })
+    }
+
+    const deleteServiceById = (id) => {
+        GlobalApi.deleteServiceById(id).then(resp => {
+            if(resp === 'success'){
+                setModalVisible(false)
+                showMessage({
+                    message: "Service deleted successfully",
+                    type: "success",
+                  });
+                  refreshPage()
+            }else{
+                showMessage({
+                    message: "An error occured while trying to delete the service please try again",
+                    type: "danger",
+                  });
+            }
+        })
+    }
+
+    const updateServiceStatus = (status, serviceId) => {
+        GlobalApi.updateServiceStatus(serviceId, status)
+        .then(resp => {
+            if(resp === 'success'){
+                setModalVisible(false)
+                showMessage({
+                    message: `Service ${status}`,
+                    type: "success",
+                  });
+                  refreshPage()
+            }else{
+                showMessage({
+                    message: "An error occured while trying to update the service status please try again",
+                    type: "danger",
+                  });
+            }
         })
     }
   return (
@@ -71,19 +113,24 @@ export default function MyServiceScreen() {
         {/* Modal section for service action  */}
         <CustomModal visible={isModalVisible} height={screenHeight * .6} onClose={setModalVisible} title={modalService?.name}>
             <View style={styles.modalBtnContainer}>
-                <TouchableOpacity style={styles.deleteBtn}>
+                <TouchableOpacity style={styles.deleteBtn} 
+                    onPress={() => deleteServiceById(modalService?.id)}
+                >
                     <Text style={styles.deleteText}>Delete</Text>
                 </TouchableOpacity>
 
-                {modalService?.serviceStatus === 'active'?<TouchableOpacity style={styles.disableBtn}>
+                {modalService?.serviceStatus === 'active'?<TouchableOpacity style={styles.disableBtn} 
+                    onPress={() => updateServiceStatus('disabled', modalService?.id)}
+                >
                     <Text style={styles.disableText}>Disble</Text>
                 </TouchableOpacity> :
-                <TouchableOpacity style={styles.enableBtn}>
+                <TouchableOpacity style={styles.enableBtn} onPress={() => updateServiceStatus('active', modalService?.id)}>
                     <Text style={styles.enableText}>Enable</Text>
                 </TouchableOpacity>}
             </View>
 
         </CustomModal>
+        <FlashMessage position="bottom"/>
     </View>
   )
 }
