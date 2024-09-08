@@ -28,10 +28,6 @@ export default function MyServiceScreen() {
         getServiceByUserEmail()
     }, [user, services])
 
-    const refreshPage = () => {
-        getServiceByUserEmail()
-    }
-
     const showModal = (serviceToView) => {
         setModalService(serviceToView)
         setModalVisible(true)
@@ -52,7 +48,6 @@ export default function MyServiceScreen() {
                     message: "Service deleted successfully",
                     type: "success",
                   });
-                  refreshPage()
             }else{
                 showMessage({
                     message: "An error occured while trying to delete the service please try again",
@@ -71,7 +66,6 @@ export default function MyServiceScreen() {
                     message: `Service ${status}`,
                     type: "success",
                   });
-                  refreshPage()
             }else{
                 showMessage({
                     message: "An error occured while trying to update the service status please try again",

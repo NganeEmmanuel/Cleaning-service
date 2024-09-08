@@ -313,10 +313,10 @@ const updateBookingStatus = async (bookingID, status) => {
         }
         
         const result = await response.json();
-        return result.data;
+        return 'success';
     } catch (error) {
         console.error(`Error fetching marking booing as complete with id (${bookingID}):`, error);
-        throw error;
+        return 'unsuccessful'
     }
 };
 
