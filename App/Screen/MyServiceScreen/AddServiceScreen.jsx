@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, FlatList, ScrollView, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import BackNavigation from './../../Common/BackNavigation';
 import { Picker } from '@react-native-picker/picker';
@@ -7,38 +7,36 @@ import Colors from '../../Utils/Colors';
 import GlobalApi from '../../Utils/GlobalApi';
 import { useUser } from '@clerk/clerk-expo';
 
-/**
- * Todo for GPT. Please implement the following
- * 
- * 1. Make sure that, when the user clicks the "confirm & save" button, a loading screen is displayed over the content.
- * 2. if the save is sucessfull, you will display a success message in green text and after two seconds, go back to the previous screen (that is call navigation.goBack())
- * 3. if not successfull or there is any error, you will display an appropriate error to fit the situations
- * 
- * You will design the load screen as foollows:
- * - It will have an opacity of .5 so that the main components of this page are still visble but can't be interacted with
- * - it will cover the entire screean and cannot be closed
- * - it will have a background color of white
- * - it will have a loading spinner icon at the center withe text underneath saying "Verifying & Saving Service now..."
- * - it will be above all other elements.
- * - let it be a new component on its own that we can reuse in other place. Use props if need be to make it functional
- * 
- */
-export default function AddServiceScreen() {
+// Loading screen component
+const LoadingOverlay = ({ visible }) => {
+    if (!visible) return null;
+    
+    return (
+        <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color={Colors.PRIMARY} />
+            <Text style={styles.loadingText}>Verifying & Saving Service now...</Text>
+        </View>
+    );
+};
+
+export default function AddServiceScreen({ navigation }) {
     const [serviceName, setServiceName] = useState('');
     const [pricePerHour, setPricePerHour] = useState('');
     const [description, setDescription] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [images, setImages] = useState([]);
     const [selectedOption, setSelectedOption] = useState('');
-    const [categories, setCategories] = useState([])
-    const [address, setAddress] = useState('')
-    const {user} = useUser();
+    const [categories, setCategories] = useState([]);
+    const [address, setAddress] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState({ type: '', text: '' });
+    const { user } = useUser();
 
     useEffect(() => {
         GlobalApi.getCategories().then(resp => {
-            setCategories(resp?.categories)
-        })
-    }, [categories])
+            setCategories(resp?.categories);
+        });
+    }, [categories]);
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -49,14 +47,13 @@ export default function AddServiceScreen() {
     
         if (!result.canceled && result.assets) {
             const selectedImages = result.assets.map(img => ({
-                uri: img.uri, // Required by your backend
+                uri: img.uri,
                 filename: img.fileName,
-                type: img.mimeType, // Optional, include if needed
+                type: img.mimeType,
             }));
             setImages([...images, ...selectedImages]);
         }
     };
-    
 
     const removeImage = (index) => {
         setImages(images.filter((_, i) => i !== index));
@@ -71,7 +68,44 @@ export default function AddServiceScreen() {
         </View>
     );
 
-    const handleSubmit = () => {
+    const validateInput = () => {
+        const phoneRegex = /^[0-9]{9}$/;
+        const decimalRegex = /^[0-9]+(\.[0-9]{1,2})?$/;
+
+        if (!serviceName.trim()) {
+            setMessage({ type: 'error', text: 'Service name cannot be empty' });
+            return false;
+        }
+
+        if (!decimalRegex.test(pricePerHour)) {
+            setMessage({ type: 'error', text: 'Price per hour must be a positive decimal' });
+            return false;
+        }
+
+        if (!phoneRegex.test(contactNumber)) {
+            setMessage({ type: 'error', text: 'Contact number must be a valid 9-digit number' });
+            return false;
+        }
+
+        if (!selectedOption) {
+            setMessage({ type: 'error', text: 'You must select a category' });
+            return false;
+        }
+
+        if (images.length === 0) {
+            setMessage({ type: 'error', text: 'You must add at least one image' });
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleSubmit = async () => {
+        if (!validateInput()) return;
+
+        setLoading(true); // Show loading overlay
+        setMessage({ type: '', text: '' }); // Clear previous messages
+
         const data = {
             serviceName,
             pricePerHour,
@@ -84,27 +118,26 @@ export default function AddServiceScreen() {
             images,
         };
 
-        /**
-         * TODO for you GPT. I want you to check the values and make sure of the following
-         * 
-         * 1. Only Valid strings can be entered in for the input [service name]
-         * 2. Only Valid positive decimals can be entered in for the input [price per hourse]
-         * 3. Only a valid 9-digit number can be entered for the input [Contact Number]
-         * 4. the value of selected option must not be empty or blank
-         * 5. Atleast one image must be added
-         */
-       if(GlobalApi.addService(data) === "success"){
-            //implement for success
-       }else{
-            //implement for unsuccessfu
-       }
-    //    console.log(images)
+        try {
+            const response = await GlobalApi.addService(data);
+            if (response === "success") {
+                setMessage({ type: 'success', text: 'Service saved successfully!' });
+                setTimeout(() => {
+                    navigation.goBack();
+                }, 2000);
+            } else {
+                throw new Error('Failed to save service');
+            }
+        } catch (error) {
+            setMessage({ type: 'error', text: 'An error occurred while saving the service' });
+        } finally {
+            setLoading(false); // Hide loading overlay
+        }
     };
 
     return (
         <View style={styles.container}>
             <BackNavigation title={'Add Service'} />
-
             <ScrollView contentContainerStyle={styles.form}>
                 <TextInput
                     style={styles.input}
@@ -167,12 +200,20 @@ export default function AddServiceScreen() {
                     horizontal
                     style={styles.imageList}
                 />
+
+                {message.text ? (
+                    <Text style={message.type === 'success' ? styles.successMessage : styles.errorMessage}>
+                        {message.text}
+                    </Text>
+                ) : null}
             </ScrollView>
 
-            {/* Fixed Confirm & Save Button */}
             <TouchableOpacity onPress={handleSubmit} style={styles.confirmButton}>
                 <Text style={styles.confirmButtonText}>Confirm & Save</Text>
             </TouchableOpacity>
+
+            {/* Loading overlay */}
+            <LoadingOverlay visible={loading} />
         </View>
     );
 }
@@ -255,5 +296,31 @@ const styles = StyleSheet.create({
         color: Colors.WHITE,
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    loadingOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 10,
+    },
+    loadingText: {
+        marginTop: 10,
+        color: Colors.PRIMARY,
+        fontSize: 16,
+    },
+    successMessage: {
+        color: 'green',
+        textAlign: 'center',
+        marginTop: 10,
+    },
+    errorMessage: {
+        color: 'red',
+        textAlign: 'center',
+        marginTop: 10,
     },
 });
