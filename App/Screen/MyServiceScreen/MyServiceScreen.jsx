@@ -10,7 +10,6 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import CustomModal from '../../Common/CustomModal'
 import FlashMessage, { showMessage } from 'react-native-flash-message';
 import { useNavigation } from '@react-navigation/native';
-import { se } from 'date-fns/locale/se'
 
 export default function MyServiceScreen() {
 

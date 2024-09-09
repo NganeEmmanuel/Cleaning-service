@@ -82,16 +82,6 @@ export default function BookingScreen() {
           )}
           />
         </View>
-        {/* Modal section for booking */}
-        {/* <Modal animationType='slide' visible={showModal} style={styles.bookingDetails}
-          presentationStyle='formSheet'
-        >
-            <BookingDetailsModal 
-                hideModal={() => setShowModal(false)} 
-                booking={modalBooking}
-                serviceCompleted={serviceCompleted}
-            />
-        </Modal> */}
       </ScrollView>
       
       {/* modal section  */}

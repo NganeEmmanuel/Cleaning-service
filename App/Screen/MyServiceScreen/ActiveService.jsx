@@ -9,9 +9,9 @@ export default function ActiveService({service, onClick}) {
       <Image source={{uri:service?.images[0]?.url}} style={styles.serviceImage} />
       <View style={styles.serviceInfoContainer}>
             <Text style={styles.serviceName}>{service?.name}</Text>
-            <Text style={styles.price}>{`${service?.pricePerHour} / hour`}</Text>
+            <Text style={styles.price}>{`${service?.pricePerHour} FCFA / Hour`}</Text>
             <Text style={styles.category}>{service?.category?.name}</Text>
-            <Text style={styles.dateCreated}>{formatDistance(new Date(service?.createdAt), new Date(), {
+            <Text style={styles.dateCreated}>Posted: {formatDistance(new Date(service?.createdAt), new Date(), {
                 addSuffix: true
                 })}</Text>
       </View>
@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
     },
 
     serviceImage: {
-        width: 130,
-        height: 130,
+        width: 110,
+        height: 110,
         marginRight: 5,
         borderRadius: 10
     },
@@ -51,14 +51,14 @@ const styles = StyleSheet.create({
         fontFamily: 'outfit-medium',
         fontSize: 17,
         color: Colors.BLACK,
-        width: 155
+        width: 200,
     },
 
     price: {
         fontFamily: 'outfit',
         color: Colors.GREY,
         fontSize: 15,
-        marginTop: 10
+        marginTop: 5
     },
 
     category: {
@@ -70,14 +70,14 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         alignSelf: 'flex-start',
         paddingHorizontal: 15,
-        marginTop: 12
+        marginTop: 5
     },
 
     dateCreated: {
         fontFamily: 'outfit',
         fontSize: 15,
         color: Colors.GREY,
-        marginTop: 10,
+        marginTop: 5,
         
     }
 

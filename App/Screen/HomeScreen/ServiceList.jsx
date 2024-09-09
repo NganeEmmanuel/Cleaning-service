@@ -3,14 +3,21 @@ import React, {useEffect, useState} from 'react'
 import Heading from '../../Common/Heading'
 import GlobalApi from '../../Utils/GlobalApi'
 import ServiceListItemSmall from './ServiceListItemSmall'
+import { useNavigation } from '@react-navigation/native'
 
 export default function ServiceList() {
+
+    const navigation = useNavigation()
 
     const [serviceList, setServiceList] = useState([])
 
     useEffect(() => {
       getServiceList()
     }, [])
+
+    const viewLatestSerivce = () => {
+      navigation.push('latest-services')
+    }
 
     /**
      * Get Service list from Global API
@@ -23,7 +30,7 @@ export default function ServiceList() {
     }
   return (
     <View style={styles.serviceContainer}>
-      <Heading text={'Latest Services'} isViewAll={true} />
+      <Heading text={'Latest Services'} isViewAll={true} onPress={viewLatestSerivce}/>
       <FlatList 
       data={serviceList}
       nestedScrollEnabled={true}

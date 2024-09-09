@@ -69,7 +69,7 @@ export default function BrowseOrdersScreen() {
           <FlatList 
           data={orders}
           renderItem={({item, index}) => (
-            <ServiceListItem service={item.service} booking={item} showModal={showModal}/>
+            <ServiceListItem service={item.service} booking={item} showModal={showModal} isOrder={true} />
           )}
           />
         </View>

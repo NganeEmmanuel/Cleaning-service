@@ -13,6 +13,7 @@ export default function BookingModal({ serviceID, hideModal, successfulBooking }
     const [selectedTime, setSelectedTime] = useState();
     const [selectedDate, setSelectedDate] = useState();
     const [notes, setNotes] = useState();
+    const [phone, setPhone] = useState()
     const { user } = useUser();
 
     useEffect(() => {
@@ -43,13 +44,19 @@ export default function BookingModal({ serviceID, hideModal, successfulBooking }
             userEmail: user?.primaryEmailAddress.emailAddress,
             time: selectedTime,
             date: formatDate(selectedDate, "MMM dd yyyy"),
+            phoneNumber: phone,
             notes: notes,
             serviceID: serviceID
         };
 
         GlobalApi.createBooking(data).then(resp => {
-            successfulBooking();
-            hideModal();
+            if(resp === 'success'){
+                successfulBooking();
+                hideModal();
+            }else{
+                ToastAndroid.show("An error occured. Please check your internet connection and try again", ToastAndroid.LONG)
+                hideModal();
+            }
         });
     };
 
@@ -92,6 +99,15 @@ export default function BookingModal({ serviceID, hideModal, successfulBooking }
                                 </Text>
                             </TouchableOpacity>
                         )}
+                    />
+                </View>
+
+                <View style={{ marginTop: 20 }}>
+                    <Heading text={'Add Contact'} />
+                    <TextInput 
+                        placeholder='Phone number ...' 
+                        style={styles.noteTetxtArea}
+                        onChangeText={text => setPhone(text)}
                     />
                 </View>
 

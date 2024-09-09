@@ -87,7 +87,7 @@ const getCategories = async () => {
         return result.data;
     } catch (error) {
         console.error('Error fetching category data:', error);
-        throw error;
+        return 'unsuccessful'
     }
 };
 
@@ -104,6 +104,7 @@ const getServiceList = async () => {
             contactPerson
             address
             about
+            pricePerHour
             category {
                 name
             }
@@ -132,7 +133,7 @@ const getServiceList = async () => {
         return result.data;
     } catch (error) {
         console.error('Error fetching service list data:', error);
-        throw error;
+        return 'unsuccessful'
     }
 };
 
@@ -177,33 +178,21 @@ const getServiceListByCategory = async (category) => {
         return result.data;
     } catch (error) {
         console.error(`Error fetching service list data by category (${category}):`, error);
-        throw error;
+       return 'unsuccessful'
     }
 };
 
 /**
- * @param data object containing the information for each booking
- * @returns id of the booking created
+ * @param id id of the booking ou want to publish
+ * @returns count
  */
-const createBooking = async (data) => {    
+const publishBooking = async (id) => {
     const query = gql`
-        mutation CreateBooking {
-            createBooking(
-                data: {
-                    userName: "${data.username}",
-                    userEmail: "${data.userEmail}",
-                    bookingStatus: booked,
-                    service: {connect: {id: "${data.serviceID}"}},
-                    date: "${data.date}",
-                    time: "${data.time}",
-                    notes: "${data.notes}"
-                }
-            ) {
-                id
-            }
-            publishManyBookingsConnection(to: PUBLISHED) {
+
+        mutation PublishBooking {
+            publishManyBookingsConnection(to: PUBLISHED, where: {id: "${id}"}) {
                 aggregate {
-                count
+                    count
                 }
             }
         }
@@ -226,8 +215,56 @@ const createBooking = async (data) => {
         const result = await response.json();
         return result.data;
     } catch (error) {
-        console.error(`Error creating the booking for this data: (${data}):`, error);
+        console.error(`Error publishing Booking with id: ${id}:`, error);
         throw error;
+    }
+};
+
+
+/**
+ * @param data object containing the information for each booking
+ * @returns id of the booking created
+ */
+const createBooking = async (data) => {    
+    const query = gql`
+        mutation CreateBooking {
+            createBooking(
+                data: {
+                    userName: "${data.username}",
+                    userEmail: "${data.userEmail}",
+                    bookingStatus: booked,
+                    service: {connect: {id: "${data.serviceID}"}},
+                    date: "${data.date}",
+                    time: "${data.time}",
+                    phoneNumber: "${data.phoneNumber}",
+                    notes: "${data.notes}"
+                }
+            ) {
+                id
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        const publishData = await publishBooking(result.data.createBooking.id)
+        return 'success';
+    } catch (error) {
+        console.error(`Error creating the booking for this data: (${data}):`, error);
+        return 'error';
     }
 };
 
@@ -250,6 +287,7 @@ const getBookingByUserEmail = async (userEmail) => {
                 about
                 address
                 contactPerson
+                pricePerHour
                 email
                 images {
                     url
@@ -382,6 +420,7 @@ const getOrdersByUserEmail = async (userEmail) => {
                 userName
                 time
                 date
+                phoneNumber
                 service {
                     about
                     address

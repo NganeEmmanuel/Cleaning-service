@@ -5,7 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
-export default function ServiceListItem({service, booking, showModal}) {
+export default function ServiceListItem({service, booking, showModal, isOrder=false}) {
     const navigation =useNavigation()
   return (
     <TouchableOpacity style={styles.container} 
@@ -22,20 +22,38 @@ export default function ServiceListItem({service, booking, showModal}) {
       <View style={styles.serviceInforContainer}>
         <Text style={styles.serviceName}>{service?.name}</Text>
 
-        {/* show only if is not for booking screen  */}
-        <Text style={styles.serviceContactPerson}>{!booking?.service? service?.contactPerson : booking?.userName}</Text>
+        {/* contact/Bokking person  */}
+        {!isOrder? 
+          <Text style={styles.serviceContactPerson}>By: {!booking?.service? service?.contactPerson : booking?.service?.contactPerson}</Text> 
+            :
+            <Text style={styles.serviceContactPerson}>By: {booking?.userName}</Text>
+        }
 
+        {/* Price  */}
+        {!isOrder&&<Text style={styles.serviceContactPerson}>{!booking?.service? service?.pricePerHour : booking?.service?.pricePerHour} FCFA / Hour</Text>}
+
+        {/* location  */}
         {!booking?.id&&<Text style={styles.serviceAddress}>
             <Ionicons name="location-sharp" size={15} color={Colors.PRIMARY}/>
             {service.address}
-        </Text>}  
+        </Text>} 
+
+        {/* time and date  */}
+        {isOrder&&
+          <Text style={styles.bookingTime}>
+          <FontAwesome name="calendar-check-o" size={18} color={Colors.PRIMARY} />
+          {`${booking?.date} at ${booking?.time}`}
+          </Text>
+        }
+        {isOrder&&
+          <Text style={styles.PhoneNumber}>
+          <FontAwesome name="mobile-phone" size={25} color={Colors.PRIMARY} />
+             {` ${booking?.phoneNumber}`}
+          </Text>
+        }
 
         {/* section for when used in the booking screen  */}
         {booking?.id&&<View>
-          <Text style={styles.bookingTime}>
-              <FontAwesome name="calendar-check-o" size={20} color={Colors.PRIMARY} />
-              {`${booking?.date} at ${booking?.time}`}
-              </Text>
           {booking?.bookingStatus === "booked"&&<Text style={styles.bookingStatusBooked}>{booking?.bookingStatus}</Text>}
           {booking?.bookingStatus === "inProgress"&&<Text style={styles.bookingStatusInProgress}>{booking?.bookingStatus}</Text>}
           {booking?.bookingStatus === "completed"&&<Text style={styles.bookingStatusComplete}>{booking?.bookingStatus}</Text>}
@@ -63,8 +81,8 @@ const styles = StyleSheet.create({
   },
 
   serviceBookingImage: {
-    width: 120,
-    height: 130, 
+    width: 115,
+    height: 120, 
     borderRadius: 15
   },
 
@@ -75,13 +93,16 @@ const styles = StyleSheet.create({
 
   serviceName:{
     fontFamily: 'outfit-bold',
-    fontSize: 18
+    fontSize: 18,
+    width: 200,
+    marginBottom: -10
   },
 
   serviceContactPerson: {
     fontFamily: 'outfit-medium',
     color: Colors.GREY,
-    fontSize: 17
+    fontSize: 17,
+    marginBottom: -8
   },
 
   serviceAddress: {
@@ -99,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     alignSelf: 'flex-start',
     paddingHorizontal: 15,
-    marginTop: 10
+    marginTop: 5
 },
 
 bookingStatusInProgress: {
@@ -140,8 +161,16 @@ bookingStatusCanceled: {
 
 bookingTime: {
   fontFamily: 'outfit',
-  fontSize: 13,
-  color: Colors.GREY
+  fontSize: 16,
+  color: Colors.GREY,
+  marginBottom: -8
+},
+
+PhoneNumber: {
+  fontFamily: 'outfit',
+  fontSize: 17,
+  color: Colors.GREY,
+  marginBottom: -8
 }
 
 })
