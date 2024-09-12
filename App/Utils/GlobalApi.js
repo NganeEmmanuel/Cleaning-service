@@ -773,6 +773,59 @@ const updateServiceStatus = async (serviceID, status) => {
         return "success";
     } catch (error) {
         console.error(`Error update service status with id (${serviceID}):`, error);
+        return "error"
+    }
+};
+
+/**
+ * Updates the service status who's id matches the provided id in the database
+ * 
+ * @param term String you want to search against
+ * @returns a list of active services containing that term
+ */
+const SearchServiceList = async (term) => {    
+    const query = gql`
+       query SearchServiceList {
+            serviceLists(
+                where: {serviceStatus: active, AND: {name_contains: "${term}"}}
+                orderBy: updatedAt_DESC
+            ) {
+                id
+                name
+                pricePerHour
+                phoneNumber
+                contactPerson
+                email
+                address
+                about
+                category {
+                    name
+                }
+                images {
+                    url
+                }
+            }
+        }
+    `;
+
+    try {
+        const response = await fetch(MASTER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HYGRAPH_TOKEN}`,
+            },
+            body: JSON.stringify({ query: query.loc.source.body }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error(`Error getting services containing the term: (${term}):`, error);
         return "unsuccessful"
     }
 };
@@ -791,5 +844,6 @@ export default {
     getOrdersByUserEmail,
     addService,
     deleteServiceById,
-    updateServiceStatus
+    updateServiceStatus,
+    SearchServiceList
 };

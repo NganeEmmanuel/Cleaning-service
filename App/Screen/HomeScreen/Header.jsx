@@ -1,29 +1,38 @@
-import { View, Text, Image, StyleSheet, TextInput} from 'react-native'
-import React from 'react'
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity} from 'react-native'
+import React, { useState } from 'react'
 import { useUser } from '@clerk/clerk-expo'
 import Colors from '../../Utils/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Header() {
     const {user, isLoading} = useUser(); // fetch data from server
+    const navigation = useNavigation()
+    const [term, setTerm] = useState('')
   return user&&(
     <View style={styles.container}>
         {/* profile section */}
         <View style={styles.headerContainer}>
             <View style={styles.profileContainer}>
-                <Image source={{uri:user?.imageUrl}} style={styles.headerUserImage} />
+                <TouchableOpacity onPress={() => navigation.push('Profile')}>
+                    <Image source={{uri:user?.imageUrl}} style={styles.headerUserImage} />
+                </TouchableOpacity>
                 <View>
                     <Text style={styles.headerWelcomeText}>Welcome</Text>
                     <Text style={styles.headerUsername}>{user?.fullName}</Text>
                 </View>
             </View>
-            <FontAwesome name="bookmark-o" size={27} color={Colors.WHITE} />
+            <TouchableOpacity onPress={() => navigation.push('Booking')}>
+                <FontAwesome name="bookmark-o" size={27} color={Colors.WHITE} />
+            </TouchableOpacity>
         </View>
 
         {/* search bar section */}
         <View style={styles.searchBarContainer}>
-            <TextInput placeholder="Search for services ..." style={styles.searchbarTextInput} />
-            <FontAwesome name="search" size={24} color={Colors.PRIMARY} style={styles.searchBarButton} />
+            <TextInput placeholder="Search for services ..." style={styles.searchbarTextInput} onChangeText={setTerm}/>
+            <TouchableOpacity onPress={() => navigation.push('search-result', {searchTerm: term})}>
+                <FontAwesome name="search" size={24} color={Colors.PRIMARY} style={styles.searchBarButton} />
+            </TouchableOpacity>
         </View>
     </View>
   )

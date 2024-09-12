@@ -18,14 +18,18 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.emmanuelngane.cleanigservice"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "clerkFrontendApi": "pk_test_ZG9taW5hbnQtYW50ZWF0ZXItNzkuY2xlcmsuYWNjb3VudHMuZGV2JA",
-       "hygraphToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImdjbXMtbWFpbi1wcm9kdWN0aW9uIn0.eyJ2ZXJzaW9uIjozLCJpYXQiOjE3MjMwNTU3NjAsImF1ZCI6WyJodHRwczovL2FwaS11cy1lYXN0LTEtc2hhcmVkLXVzZWExLTAyLmh5Z3JhcGguY29tL3YyL2Nsemp1YnhkcDA0bW8wZHV4YXNhanl5cG8vbWFzdGVyIiwibWFuYWdlbWVudC1uZXh0LmdyYXBoY21zLmNvbSJdLCJpc3MiOiJodHRwczovL21hbmFnZW1lbnQtdXMtZWFzdC0xLXNoYXJlZC11c2VhMS0wMi5oeWdyYXBoLmNvbS8iLCJzdWIiOiIyN2QzM2JlZC1jNzRkLTQ3OTgtOGE4NS1lMGFiNWEwMWFlZjYiLCJqdGkiOiJjbHprNnd0eXQwNHR3MDZsaTAwOWdjcXNtIn0.AX9Y8fF3jgT6sEX6UM3TbVIvNtfSOE4VvhNSJ-UesmMXE3TE-mo044ZZiZlan5HB6tP6HIskAwX-iYQXTLvwpHbIhGJLXj08iynWRTf1SMFW3_2VG_ami_cIHDuTm1hiFCZD2brDnz7QKviq0RljX5bgrczOD_tGkmp5mgbgZC6VydO8PMa2L8STqLzWfiI0oS0b-IA53GcA05Da33GuWQSyGNlJZNCNOzYOyJyO5lQyBihAR2JTo_JCNyUcBsllAU8ZDuQW5v0Guhtp8rLJNkToawTsBWrgmS1So3hHO_2TmKVnBCYWJYm44gBzMcjRXgxx1qzmifZIsiSSk_lsx8Fe8fyg1qNR0vuA82dtXTCvlhCptuqM_iIVWdE-PXgkj7SQBKFbPqFVa-JoUXCbOEYSLBCUFjzC6LcaAXhgWgGl9KJ_WSHdOBSg4CH3_IPCR54D4xUhDIO8f1xw6OSuRNRUwJZAujtMOYC64qucHcshBzjlrJ7_1NEWH7FJBqVMqIKomolj3VHQchP_EF6aqfUyGE34PA2z8gRSxp4b12h3C2KCJykP3Bz-viNWQVMRmL6NlMIHs92AFpGrYlv7ejS4U7gRkChL0j_dJc-UR7web2XQMSQi0-F1ccYq22c7rPaZjlFK_AfP-8mKaDBbc6ZCV_s5w2UVwXy90sKdNXg"
+      "hygraphToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImdjbXMtbWFpbi1wcm9kdWN0aW9uIn0.eyJ2ZXJzaW9uIjozLCJpYXQiOjE3MjMwNTU3NjAsImF1ZCI6WyJodHRwczovL2FwaS11cy1lYXN0LTEtc2hhcmVkLXVzZWExLTAyLmh5Z3JhcGguY29tL3YyL2Nsemp1YnhkcDA0bW8wZHV4YXNhanl5cG8vbWFzdGVyIiwibWFuYWdlbWVudC1uZXh0LmdyYXBoY21zLmNvbSJdLCJpc3MiOiJodHRwczovL21hbmFnZW1lbnQtdXMtZWFzdC0xLXNoYXJlZC11c2VhMS0wMi5oeWdyYXBoLmNvbS8iLCJzdWIiOiIyN2QzM2JlZC1jNzRkLTQ3OTgtOGE4NS1lMGFiNWEwMWFlZjYiLCJqdGkiOiJjbHprNnd0eXQwNHR3MDZsaTAwOWdjcXNtIn0.AX9Y8fF3jgT6sEX6UM3TbVIvNtfSOE4VvhNSJ-UesmMXE3TE-mo044ZZiZlan5HB6tP6HIskAwX-iYQXTLvwpHbIhGJLXj08iynWRTf1SMFW3_2VG_ami_cIHDuTm1hiFCZD2brDnz7QKviq0RljX5bgrczOD_tGkmp5mgbgZC6VydO8PMa2L8STqLzWfiI0oS0b-IA53GcA05Da33GuWQSyGNlJZNCNOzYOyJyO5lQyBihAR2JTo_JCNyUcBsllAU8ZDuQW5v0Guhtp8rLJNkToawTsBWrgmS1So3hHO_2TmKVnBCYWJYm44gBzMcjRXgxx1qzmifZIsiSSk_lsx8Fe8fyg1qNR0vuA82dtXTCvlhCptuqM_iIVWdE-PXgkj7SQBKFbPqFVa-JoUXCbOEYSLBCUFjzC6LcaAXhgWgGl9KJ_WSHdOBSg4CH3_IPCR54D4xUhDIO8f1xw6OSuRNRUwJZAujtMOYC64qucHcshBzjlrJ7_1NEWH7FJBqVMqIKomolj3VHQchP_EF6aqfUyGE34PA2z8gRSxp4b12h3C2KCJykP3Bz-viNWQVMRmL6NlMIHs92AFpGrYlv7ejS4U7gRkChL0j_dJc-UR7web2XQMSQi0-F1ccYq22c7rPaZjlFK_AfP-8mKaDBbc6ZCV_s5w2UVwXy90sKdNXg",
+      "eas": {
+        "projectId": "4f70e05f-d222-4f6c-bca0-f3788a2d5355"
+      }
     },
     "scheme": "cleanigservice",
     "plugins": [

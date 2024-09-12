@@ -4,11 +4,13 @@ import GlobalApi from '../../Utils/GlobalApi';
 import Heading from '../../Common/Heading';
 import Colors from '../../Utils/Colors';
 import { useNavigation } from '@react-navigation/native';
+import CardLoadingOverlay from '../../Common/CardLoadingOverlay';
 
 export default function Categories() {
     const [categories, setCategories] = useState([]);
     const [allCategories, setAllCategories] = useState(3);
     const [isViewAll, setIsViewAll] = useState(false);
+    const [loading, setLoading] = useState(true)
 
     const navigation = useNavigation();
 
@@ -30,6 +32,10 @@ export default function Categories() {
     const getCategories = () => {
         GlobalApi.getCategories().then(resp => {
             setCategories(resp?.categories);
+            setLoading(false);
+        }).catch(() => {
+            // setErrorMessage('Something went wrong. Please check your internet connection and try again')
+            setLoading(false);  // Ensure loading ends even if there is an error
         });
     };
 
@@ -41,24 +47,27 @@ export default function Categories() {
                 onPress={viewAllCategories} 
                 isViewAllText={isViewAll ? 'View Less' : 'View All'}
             />
-            <FlatList 
-                data={categories}
-                numColumns={4}
-                nestedScrollEnabled={true}
-                renderItem={({ item, index }) => index <= allCategories && (
-                    <TouchableOpacity
-                        onPress={() => navigation.push('service-list', {
-                            category: item.name
-                        })}
-                        style={styles.mainIconContainer}
-                    >
-                        <View style={styles.iconContainer}>
-                            <Image source={{ uri: item?.icon?.url }} style={styles.icons} />
-                        </View>
-                        <Text style={styles.categoryName}>{item.name}</Text>
-                    </TouchableOpacity>
-                )}
-            />
+
+            {loading?
+                <CardLoadingOverlay visible={loading}/>
+            :   <FlatList 
+                    data={categories}
+                    numColumns={4}
+                    nestedScrollEnabled={true}
+                    renderItem={({ item, index }) => index <= allCategories && (
+                        <TouchableOpacity
+                            onPress={() => navigation.push('service-list', {
+                                category: item.name
+                            })}
+                            style={styles.mainIconContainer}
+                        >
+                            <View style={styles.iconContainer}>
+                                <Image source={{ uri: item?.icon?.url }} style={styles.icons} />
+                            </View>
+                            <Text style={styles.categoryName}>{item.name}</Text>
+                        </TouchableOpacity>
+                    )}
+                />}
         </View>
     );
 }
