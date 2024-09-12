@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Animated, Easing, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing, Modal, Linking } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -11,7 +11,7 @@ import FlashMessage, { showMessage } from 'react-native-flash-message';
 export default function ServiceDetailScreen() {
     const param = useRoute().params;
     const [service, setService] = useState();
-    const [showModal, setShowModal] = useState(false)
+    const [showModal, setShowModal] = useState(false);
     const navigation = useNavigation();
     const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -23,8 +23,9 @@ export default function ServiceDetailScreen() {
         showMessage({
             message: "Service Booked successfully",
             type: "success",
-          });
-    }
+        });
+    };
+
     const imageHeight = scrollY.interpolate({
         inputRange: [0, 500], // Extended scroll distance for smoother transition
         outputRange: [300, 70], // Height transition range
@@ -32,9 +33,32 @@ export default function ServiceDetailScreen() {
         easing: Easing.out(Easing.ease), // Easing function for smooth transition
     });
 
+    /**
+     * Open WhatsApp with a pre-typed message
+     */
+    const openWhatsApp = () => {
+        const phoneNumber = service?.phoneNumber; // Assuming you have a phone number in your service data
+        const serviceName = service?.name;
+        const price = service?.pricePerHour;
+        const message = `Greetings, I am writing concerning your service (${serviceName} for ${price}/hour) listed on the SkillHire app. I would like to book an appointment`;
+
+        const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+237${phoneNumber}`;
+        
+        Linking.canOpenURL(url).then(supported => {
+            if (supported) {
+                Linking.openURL(url);
+            } else {
+                showMessage({
+                    message: "WhatsApp is not installed on your device",
+                    type: "danger",
+                });
+            }
+        });
+    };
+
     return (
         <View style={styles.container}>
-            <View style={{height: '99.5%'}}>
+            <View style={{ height: '99.5%' }}>
                 <TouchableOpacity style={styles.navContainer} onPress={() => navigation.goBack()}>
                     <Ionicons name="arrow-back-outline" size={30} color="black" />
                 </TouchableOpacity>
@@ -43,7 +67,7 @@ export default function ServiceDetailScreen() {
                 <Animated.Image source={{ uri: service?.images[0]?.url }} style={[styles.serviceImage, { height: imageHeight }]} />
 
                 {/* Basic information section */}
-                <Animated.ScrollView 
+                <Animated.ScrollView
                     contentContainerStyle={styles.infoContainer}
                     onScroll={Animated.event(
                         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -74,8 +98,8 @@ export default function ServiceDetailScreen() {
 
                 {/* buttons sections */}
                 <View style={styles.btnContainer}>
-                    <TouchableOpacity style={styles.messageBtn}>
-                        <Text style={styles.messageBtnText}>Message</Text>
+                    <TouchableOpacity style={styles.messageBtn} onPress={openWhatsApp}>
+                        <Text style={styles.messageBtnText}>WhatsApp</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.bookinBtn} onPress={() => setShowModal(true)} >
                         <Text style={styles.bookingBtnText}>Book Now</Text>
@@ -91,7 +115,7 @@ export default function ServiceDetailScreen() {
                     />
                 </Modal>
             </View>
-            <FlashMessage position="bottom"/>
+            <FlashMessage position="bottom" />
         </View>
     );
 }
@@ -193,5 +217,4 @@ const styles = StyleSheet.create({
         color: Colors.WHITE,
         fontSize: 18
     }
-
 });

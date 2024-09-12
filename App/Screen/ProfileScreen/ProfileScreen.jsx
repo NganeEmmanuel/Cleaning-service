@@ -2,37 +2,57 @@ import { View, Text, Image, FlatList, TouchableOpacity } from 'react-native'
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useUser } from '@clerk/clerk-expo';
+import { useClerk, useUser } from '@clerk/clerk-expo';
 import Colors from '../../Utils/Colors';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const {user} = useUser()
+  const { signOut } = useClerk();
+  const navigation = useNavigation()
+
+
   const profileMenue = [
     {
       id: 1,
       name: 'Home',
-      icon: 'home'
+      icon: 'home',
+      tab: 'Home'
     },
 
     {
       id: 2,
       name: 'My booking',
-      icon: 'bookmark'
+      icon: 'bookmark',
+      tab: 'Booking'
     },
 
     {
       id: 3,
       name: 'My Services',
-      icon: 'dashboard-customize'
+      icon: 'dashboard-customize',
+      tab: 'MyServices'
     },
 
     {
       id: 4,
       name: 'Logout',
-      icon: 'log-out'
+      icon: 'log-out',
+      tab: 'none'
     }
 
   ]
+  /**\
+   * Gpt Handle this implementation gracefully
+   * This method clears the authToken in cache and end the user's session Making sure user must sign back in to continue to use the app
+   */
+  const logOut = async () => {
+    try {
+      await signOut(); // Call Clerk's signOut function
+    } catch (error) {
+      console.error('Failed to log out:', error);
+    }
+  };
   return (
     <View>
       {/* Profile header section  */}
@@ -81,6 +101,12 @@ export default function ProfileScreen() {
           data={profileMenue}
           renderItem={({item, index}) => (
             <TouchableOpacity 
+            onPress={
+              item.tab != 'none'?
+                () => navigation.navigate(item.tab)
+              :
+                () => logOut()
+            }
               style={{
                 display: 'flex',
                 flexDirection: 'row',

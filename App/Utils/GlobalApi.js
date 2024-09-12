@@ -105,6 +105,7 @@ const getServiceList = async () => {
             address
             about
             pricePerHour
+            phoneNumber
             category {
                 name
             }
@@ -150,6 +151,8 @@ const getServiceListByCategory = async (category) => {
             about
             address
             contactPerson
+            pricePerHour
+            phoneNumber
             category {
                 name
             }
@@ -282,16 +285,17 @@ const getBookingByUserEmail = async (userEmail) => {
                 bookingStatus
                 notes
                 service {
-                id
-                name
-                about
-                address
-                contactPerson
-                pricePerHour
-                email
-                images {
-                    url
-                }
+                    id
+                    name
+                    about
+                    address
+                    phoneNumber
+                    contactPerson
+                    pricePerHour
+                    email
+                    images {
+                        url
+                    }
                 }
             }
         }
@@ -373,6 +377,7 @@ const getServicesByUserEmail = async (userEmail) => {
                 name
                 serviceStatus
                 pricePerHour
+                phoneNumber
                 category {
                     name
                 }
